@@ -237,7 +237,13 @@ Have fun integrating!
   *   The AD2Pi LED is blinking steadily.  If not, recheck the AD2Pi wiring diagram from alarmdecoder.com
   *   You pressed PUBLISH (for me) after creating your device-type on graph.api.smartthings.com
 * While compiling or transferring the code, you get the following error: 'Serial1' was not declared in this scope or  'Serial2' was not declared in this scope, then you likely do not have the correct board selected in the Arduino Development Environment.  You can also have the same issue if you see that during transfer, the transfer process times out without transfering the code.  Go to the <Tools> menu and select <Board> then select the Mega 2560.  This will allow the code to compile correctly.  
-
+* A few thoughts regarding newer Vista panels that support partitions.
+  * From the Honeywell Vista20p Programming Manual
+    * • The system sensing devices have been assigned to various “zones,” which are specific areas of protection (e.g., front door, kitchen window, etc.).
+    * • Zone numbers are displayed at the keypad when an alarm or trouble condition occurs on a sensor.
+    * • Partitions (VISTA-20P Series) provide two independent areas of protection, with each partition containing a group of zones that can be armed and disarmed without affecting other zones or users.
+    * • Partitioned systems (VISTA-20P Series) can include a common zone area, which is an area shared by users of both partitions (such as a lobby in a building).
+  * Optimally, you would have a keypad (or in this case an AD2Pi) assigned to each active partition (1, 2 or 3). Most home installations are single partition using partition #1.  See the tips above for configuring a Vista 20p and intitialy try setting to *191 1 0. Check your work by #191 to confirm (returns 1 0).
 
 
 ##Credits
