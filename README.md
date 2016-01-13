@@ -231,6 +231,11 @@ To automate turning on/off the Alarm in "Stay" mode, select the Home Alarm from 
 
 To To automate turning on/off the Alarm in "Away" mode, select the Home Alarm from the list of "locks" in your SmartThings device list.  "Locking" the alarm turns it on in Away Mode while "Un-Locking" turns it off
 
+For example, here are some of my automations that control my Alarm Panel
+
+<https://cloud.githubusercontent.com/assets/5625006/12284668/552c908a-b977-11e5-87bb-ba96fb3392ab.jpg" width="200px"  />
+
+
 Have fun integrating!
 
 ## FAQs
