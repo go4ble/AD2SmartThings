@@ -233,7 +233,7 @@ To To automate turning on/off the Alarm in "Away" mode, select the Home Alarm fr
 
 For example, here are some of my automations that control my Alarm Panel
 
-<https://cloud.githubusercontent.com/assets/5625006/12284668/552c908a-b977-11e5-87bb-ba96fb3392ab.jpg" width="200px"  />
+<img src="https://cloud.githubusercontent.com/assets/5625006/12284668/552c908a-b977-11e5-87bb-ba96fb3392ab.jpg" width="200px"  />
 
 
 Have fun integrating!
