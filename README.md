@@ -157,9 +157,9 @@ The Main Tile gives the status of the system and allows you to disarm the system
 
 Inside the device type:
 
-<img src="https://cloud.githubusercontent.com/assets/5625006/6100596/3478d29e-afd8-11e4-9dfe-2945dfd7754a.PNG" width="200px"  />
+<img src="https://cloud.githubusercontent.com/assets/5625006/12284667/551b7bba-b977-11e5-99a5-13909d246b18.jpg" width="200px"  />
 
-* StatusTile -  Same as the main tile.  Shows status of system
+* StatusTile -  Same as the main tile that shows whether the system is armed or disarmed.  
 * Disarm - disarms the system.  In case you accidently press the Panic key once or twice, and do not wish to activate a panic alarm, Disarm will reset the panic sequence.
 * Stay - Activates the system in Stay node
 * Away - Activates the system in Away mode
@@ -168,18 +168,27 @@ Inside the device type:
 *Preferences - allows you to set various preferences.  You must enter your homeowner security code and you must select one of three choices for the Panic code.  
 * Message Tile - displays all the messages sent from the AD2Pi
 
-* Preferences - This allows you to configure the device type for your alarm panel.  You must enter your 4 digit homeowners alarm access code.  For the PANIC tile to work, you must select one of the three choices for your Panic code. This code must be valid for your system.  If in doubt, try "B" and then test your system
+As you scroll down the Device Type UI, you will find:
+* Zones - there are status tiles for up to 36 zones.  If you need fewer zones, you can simply trim the number of zones displayed by modifying the <details> command in the code.  Its that simple.  Zones appear orange when activity is detected (open door, motion detected, smoke, glass breaking, etc...). 
 
-<img src="https://cloud.githubusercontent.com/assets/5625006/6100607/4f67cdee-afd8-11e4-88ff-6df233021bb9.PNG" width="200px"  />
+<img src="https://cloud.githubusercontent.com/assets/5625006/12284669/552cd9c8-b977-11e5-9f27-7db5f633896a.jpg" width="200px"  />
 
-* Configure AD2Pi - this tile sends configuration commands to AD2Pi.  Enter the command in the Preferences section and then send the command to the AD2Pi by pressing this tile.  The main purpose is to set the AD2Pi with a valid address.  
+* AD2Pi Config- this tile sends configuration commands to AD2Pi.  Enter the command in the Preferences section and then send the command to the AD2Pi by pressing this tile.  The main purpose is to set the AD2Pi with a valid address.  
 
-<img src="https://cloud.githubusercontent.com/assets/5625006/6100610/67d0130a-afd8-11e4-89e6-4f03e2801406.PNG" width="200px"  />
+<img src="https://cloud.githubusercontent.com/assets/5625006/12284671/55300fe4-b977-11e5-8715-0261849ab9aa.jpg" width="200px"  />
 
 
-* Zones - there are status tiles for up to 36 zones.  If you need fewer zones, you can simply trim the number of zones displayed by modifying the <details> command in the code.  Its that simple.   
+In addition to the above tiles, notice the 3 VERTICAL DOTS in the top right corner of the Device Type screen.  Pressing these dots takes you to the Prefernces sections.  Here you can:
+* Update the icon
+* Give your system a name
+* VERY IMPORTANT:  You must enter your 4 digit homeowners alarm access code.  
+* Enter a valid keypad address which will be sent to the AD2Pi upon pressing the AD2Pi Config tile 
+* For the PANIC tile to work, you must select one of the three choices for your Panic code. This code must be valid for your system.  If in doubt, try "B" and then test your system
 
-<img src="https://cloud.githubusercontent.com/assets/5625006/6100601/47d9f9b2-afd8-11e4-8151-a38d3ad222e0.PNG" width="200px"  />
+<img src="https://cloud.githubusercontent.com/assets/5625006/12284672/5531866c-b977-11e5-80f2-0a06517c7fe2.jpg" width="200px"  />
+
+<img src="https://cloud.githubusercontent.com/assets/5625006/12284673/553310c2-b977-11e5-8632-86b96dc9e7dd.jpg" width="200px"  />
+
 
 
 To install the device type code: 
@@ -232,10 +241,11 @@ Have fun integrating!
 
 * If you have hooked up everything "perfectly", and you still do not see any communication from the AD2Pi, recheck the following:
   *   Have you set the ThingShield DIP to D0/D1?
-  *  Did you configure the AD2Pi with a valid address?  For a Vista SE series, set AD2Pi to ADRESS=31.  For Vista P series, set the address corresponding to the keypad address that you activated on your alarm keypad.  Use the mobile phone device Preferences to submit the address change information and press the <configure> tile to download the address change to the AD2Pi.  Be sure to press <configure>
+  *  Did you configure the AD2Pi with a valid address?  For a Vista SE series, set AD2Pi to ADRESS=31.  For Vista P series, set the address corresponding to the keypad address that you activated on your alarm keypad.  Use the mobile phone device Preferences to enter the address that matches the keypad address you activated on your alarm panel.  Be sure to send the valid address down to the AD2Pi by pressing the AD2Pi Config tile.   (note its best practice to delete the keypad address entry from the Preferences field once the address of the AD2Pi has been properly set.  Just leave this field blank when not in use).
   *   If you have a Vista P series, did you activate an extra keypad address for the AD2Pi to use
-  *   The AD2Pi LED is blinking steadily.  If not, recheck the AD2Pi wiring diagram from alarmdecoder.com
+  *   The AD2Pi LED is steadily flashing at about two flashes per sec.  If not, recheck the AD2Pi wiring diagram from alarmdecoder.com
   *   You pressed PUBLISH (for me) after creating your device-type on graph.api.smartthings.com
+  *   You entered your homeowners code into the Preferences page of the Device Type UI
 * While compiling or transferring the code, you get the following error: 'Serial1' was not declared in this scope or  'Serial2' was not declared in this scope, then you likely do not have the correct board selected in the Arduino Development Environment.  You can also have the same issue if you see that during transfer, the transfer process times out without transfering the code.  Go to the <Tools> menu and select <Board> then select the Mega 2560.  This will allow the code to compile correctly.  
 * A few thoughts regarding newer Vista panels that support partitions.
   * From the Honeywell Vista20p Programming Manual
