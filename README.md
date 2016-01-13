@@ -161,15 +161,14 @@ Inside the device type:
 
 * StatusTile -  Same as the main tile that shows whether the system is armed or disarmed.  
 * Disarm - disarms the system.  In case you accidently press the Panic key once or twice, and do not wish to activate a panic alarm, Disarm will reset the panic sequence.
+* Chime - toggles chime mode
 * Stay - Activates the system in Stay node
 * Away - Activates the system in Away mode
-* Chime - toggles chime mode
 * PANIC - a tile to activate the PANIC alarm.  To prevent false alrams, you must press this tile 3X. After pressing once, the tile will remind you to press twice more.  After pressing twice, the tile will remind you to press once more.  After pressing a thrid time, the PANIC alarm will sound.  Note, for this to work, you must set the Preferences to indicate which Panic code has been configured for your alarm.  If in doubt, try "B".  And test the system!
-*Preferences - allows you to set various preferences.  You must enter your homeowner security code and you must select one of three choices for the Panic code.  
 * Message Tile - displays all the messages sent from the AD2Pi
 
 As you scroll down the Device Type UI, you will find:
-* Zones - there are status tiles for up to 36 zones.  If you need fewer zones, you can simply trim the number of zones displayed by modifying the <details> command in the code.  Its that simple.  Zones appear orange when activity is detected (open door, motion detected, smoke, glass breaking, etc...). 
+* Zones - there are status tiles for up to 36 zones.   Zones appear orange when activity is detected (open door, motion detected, smoke, glass breaking, etc...). (If you need fewer zones, you can simply trim the number of zones displayed by modifying the Detials command in the code.) 
 
 <img src="https://cloud.githubusercontent.com/assets/5625006/12284669/552cd9c8-b977-11e5-9f27-7db5f633896a.jpg" width="200px"  />
 
@@ -179,10 +178,11 @@ As you scroll down the Device Type UI, you will find:
 
 
 In addition to the above tiles, notice the 3 VERTICAL DOTS in the top right corner of the Device Type screen.  Pressing these dots takes you to the Prefernces sections.  Here you can:
-* Update the icon
 * Give your system a name
-* VERY IMPORTANT:  You must enter your 4 digit homeowners alarm access code.  
+* Give your Device and image
+* Update the icon
 * Enter a valid keypad address which will be sent to the AD2Pi upon pressing the AD2Pi Config tile 
+* VERY IMPORTANT:  You must enter your 4 digit homeowners alarm access code.  
 * For the PANIC tile to work, you must select one of the three choices for your Panic code. This code must be valid for your system.  If in doubt, try "B" and then test your system
 
 <img src="https://cloud.githubusercontent.com/assets/5625006/12284672/5531866c-b977-11e5-80f2-0a06517c7fe2.jpg" width="200px"  />
