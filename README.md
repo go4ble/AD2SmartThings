@@ -85,8 +85,8 @@ Use jumpers to provide a connection between Serial3 and Pins 2/3.  Here are the 
 
 | Jumper     | Pin     | Pin     |
 |:--------:|:------:|:-----:|
-| RX         | 14      | 2       |
-| TX         | 15      | 3       |
+| TX         | 14      | 2       |
+| RX         | 15      | 3       |
 
 <img src="https://cloud.githubusercontent.com/assets/5625006/7666138/53eafdde-fb9e-11e4-92a1-c0b40a0e9001.jpg" width="400px"  />   
 
@@ -105,7 +105,7 @@ Pin Configuration for AD2Pi to Arduino Mega
 
 |Jumper  | AD2PI  | Mega   |
 |:--------:|:--------:|:--------:|
-| 3.3V   | 1      | 3.3V   |
+| 5V     | 1      | 5V     |
 | GND    | 6      | GND    |
 | TX     | 8	    | 18     |
 | RX     | 10     | 19     |
