@@ -38,7 +38,7 @@ preferences {
 }
 
 metadata {
-	definition (name: "AD2SmartThings v2.4", version: "2.4",author: "stan@dotson.info") 
+	definition (name: "AD2SmartThings v2.4.1", version: "2.4.1",author: "stan@dotson.info") 
 	{
 	capability "Switch"  // <on> will arm alarm in "stay" mode; same as armStay
         capability "Lock"  // <lock> will arm alarm in "away" mode; same as armAway
@@ -363,7 +363,7 @@ def parse(String description)
 	def msg = zigbee.parse(description)?.text
 //    log.info "Alarm Message: ${msg} "
     
-     if (msg != null && value != " " && value != "ping" && value != '"') {
+          if (msg != null && msg != " " && !msg.contains("ping") && msg != '"') {
 		result << createEvent(name: "msg", value: msg)  //display message to message tile
     	
         if (msg.contains("...."))  {
