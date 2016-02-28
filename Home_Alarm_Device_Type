@@ -38,7 +38,7 @@ preferences {
 }
 
 metadata {
-	definition (name: "AD2SmartThings v2.4.2", version: "2.4.2",author: "stan@dotson.info") 
+	definition (name: "AD2SmartThings v2.4.3", version: "2.4.3",author: "stan@dotson.info") 
 	{
 	capability "Switch"  // <on> will arm alarm in "stay" mode; same as armStay
         capability "Lock"  // <lock> will arm alarm in "away" mode; same as armAway
@@ -68,13 +68,13 @@ simulator {
 tiles 
 {
 	standardTile("main", "device.system", width: 2, height: 2, canChangeIcon: true, canChangeBackground: true)
-	{
-		state "disarmed", label:"Disarmed", action:"disarm", icon:"st.Home.home2", backgroundColor:"#ffffff"
-		state "armedAway", label:"Armed Away", action:"disarm", icon:"st.Home.home3", backgroundColor:"#587498"
-		state "armedStay", label:"Armed Stay", action:"disarm", icon:"st.Home.home4", backgroundColor:"#587498"
+		{
+			state "disarmed", label:"Disarmed", action:"disarm", icon:"st.Home.home2", backgroundColor:"#ffffff"
+			state "armedAway", label:"Armed Away", action:"disarm", icon:"st.Home.home3", backgroundColor:"#587498"
+			state "armedStay", label:"Armed Stay", action:"disarm", icon:"st.Home.home4", backgroundColor:"#587498"
         	state "alarm", label:"Alarm!", action:"disarm", icon:"st.Home.home3", backgroundColor:"#E86850"
         	state "armingAway", label:"Arming Away", action:"disarm", icon:"st.Home.home3", backgroundColor:"#FFD800"
-		state "armingStay", label:"Arming Stay", action:"disarm", icon:"st.Home.home4", backgroundColor:"#FFD800"
+			state "armingStay", label:"Arming Stay", action:"disarm", icon:"st.Home.home4", backgroundColor:"#FFD800"
 	}
  	standardTile("stay", "device.system", width: 1, height: 1, decoration: "flat")
     	{
@@ -361,7 +361,7 @@ def parse(String description)
 //	log.debug "Parsing: ${description}"
 
 	def msg = zigbee.parse(description)?.text
-//    log.debug "Alarm Message Is:'${msg}'"
+    log.info "Alarm Message Is:'${msg}'"
 
 	if (!msg.contains("ping") && msg.trim().length() > 0) {
 		result << createEvent(name: "msg", value: msg)  //display message to message tile
@@ -658,7 +658,7 @@ def parse(String description)
         		result << createEvent(name: "zoneThirtynine", value: "active", displayed: true, isStateChange: true, isPhysical: true)
         	}
     	}
-		log.info "${result?.descriptionText}"
+//		log.debug "${result?.descriptionText}"
 		return result
 	}
 }
