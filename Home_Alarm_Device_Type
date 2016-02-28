@@ -38,7 +38,7 @@ preferences {
 }
 
 metadata {
-	definition (name: "AD2SmartThings v2.4.1", version: "2.4.1",author: "stan@dotson.info") 
+	definition (name: "AD2SmartThings v2.4.2", version: "2.4.2",author: "stan@dotson.info") 
 	{
 	capability "Switch"  // <on> will arm alarm in "stay" mode; same as armStay
         capability "Lock"  // <lock> will arm alarm in "away" mode; same as armAway
@@ -361,21 +361,22 @@ def parse(String description)
 //	log.debug "Parsing: ${description}"
 
 	def msg = zigbee.parse(description)?.text
-//    log.info "Alarm Message: ${msg} "
-    
-          if (msg != null && msg != " " && !msg.contains("ping") && msg != '"') {
+//    log.debug "Alarm Message Is:'${msg}'"
+
+	if (!msg.contains("ping") && msg.trim().length() > 0) {
 		result << createEvent(name: "msg", value: msg)  //display message to message tile
     	
-        if (msg.contains("...."))  {
+        if (msg.contains("..."))  {
 			result << createEvent(name: "msg", value: "Having Trouble Sending")  
-
     	}
         
+        // when Disarmed, Ready To Arm is received, set all the Zone tiles to inactive
         if (msg.contains("DISARMED"))
     	{
         	result << createEvent(name: "system", value: "disarmed", displayed: true, isStateChange: true, isPhysical: true)
-            	result << createEvent(name: "motion", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
-            	result << createEvent(name: "zoneOne", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
+            //set "motion" capability to inactive.  This capability can be monitored by smart apps to know if your alarm system alarming
+            result << createEvent(name: "motion", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
+            result << createEvent(name: "zoneOne", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
         	result << createEvent(name: "zoneTwo", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
         	result << createEvent(name: "zoneThree", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
         	result << createEvent(name: "zoneFour", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
@@ -416,18 +417,20 @@ def parse(String description)
         	result << createEvent(name: "zoneThirtynine", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
     	}   
  		
+        // manage the CHIME tile
         if (msg.contains("CHIME"))  {
         	result << createEvent(name: "chime", value: "chimeOn", displayed: true, isStateChange: true, isPhysical: true)
     	}
-   		else  {
+   		else if (msg.contains("DISARMED"))  { 
        		result << createEvent(name: "chime", value: "chimeOff", displayed: true, isStateChange: true, isPhysical: true)
     	}
     
-    	
+    	// manage overall system status
         if (msg.contains("ALARM"))
     	{
     		result << createEvent(name: "system", value: "alarm", displayed: true, isStateChange: true, isPhysical: true)
-            	result << createEvent(name: "motion", value: "active", descriptionText: "Alarm Panel is Alarming", displayed: true, isStateChange: true, isPhysical: true)
+            //sets the "motion" capability to active.  This capability can be monitored by smart apps to know if your alarm system alarming
+            result << createEvent(name: "motion", value: "active", descriptionText: "Alarm Panel is Alarming", displayed: true, isStateChange: true, isPhysical: true)
     	}
       
         if (msg.contains("ARMED"))
@@ -456,6 +459,7 @@ def parse(String description)
         	}
     	}
     	
+        //manage the Zone tiles:
         if (msg.contains("FAULT"))
     	{
         	if (msg.contains("01"))
@@ -654,7 +658,7 @@ def parse(String description)
         		result << createEvent(name: "zoneThirtynine", value: "active", displayed: true, isStateChange: true, isPhysical: true)
         	}
     	}
-		log.debug "Parse returned ${result?.descriptionText}"
+		log.info "${result?.descriptionText}"
 		return result
 	}
 }
