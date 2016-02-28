@@ -244,6 +244,7 @@ Have fun integrating!
 
 * The Arduino 9V power supply (transformer) can be purchased at Amazon by searching for "Arduino Power Supply".  CAUTION: There are 9V power supplies availble on Amazon that do not work for the Arduino (they are made for musical instrament controllers) and some that perform very poorly on Arduino.  Be sure to read the reviews!  
 
+## TROUBLESHOOTING
 * If you have hooked up everything "perfectly", and you still do not see any communication from the AD2Pi, recheck the following:
   *   Have you set the ThingShield DIP to D2/D3?
   *  Did you configure the AD2Pi with a valid address?  For a Vista SE series, set AD2Pi to ADRESS=31.  For Vista P series, set the address corresponding to the keypad address that you activated on your alarm keypad.  Use the mobile phone device Preferences to enter the address that matches the keypad address you activated on your alarm panel.  Be sure to send the valid address down to the AD2Pi by pressing the AD2Pi Config tile.   (note its best practice to delete the keypad address entry from the Preferences field once the address of the AD2Pi has been properly set.  Just leave this field blank when not in use).
@@ -259,7 +260,21 @@ Have fun integrating!
     * Partitions (VISTA-20P Series) provide two independent areas of protection, with each partition containing a group of zones that can be armed and disarmed without affecting other zones or users.
     * Partitioned systems (VISTA-20P Series) can include a common zone area, which is an area shared by users of both partitions (such as a lobby in a building).
   * Optimally, you would have a keypad (or in this case an AD2Pi) assigned to each active partition (1, 2 or 3). Most home installations are single partition using partition #1.  See the tips above for configuring a Vista 20p and intitialy try setting to *191 1 0. Check your work by #191 to confirm (returns 1 0).
+  * In some cases, your installer will set a dummy partition to Alarm.  This will result in two sets of messages being relayed by the AD2Pi to the Device Handler.  This may cause the Tiles on your device handler to alternate or "flash" from one state to another.  The best way to fix this is to set a "MASK" on the AD2Pi. You may want to contact NuTech/AlarmDecoder for support.  The default MASK is FFFFFFFF.  If you have a mask code, you can go to the "Edit Device" menu (the 4 vertical dots) and in the "AD2PI Configuration Command" field, type the following:  
+  * MASK=FFFFFFFF    
+  * Replacing FFFFFFFF with the code that Nutech/AlarmDecoder provides.    As an example, here is a MASK that will filter out messages from dummy partitions when addresses 16-19 are enabled: 
+  * MASK=00000F00.   
+  * Remember, Its good practice to delete your config command once your are done and leave the config field null.
 
+*Your system will not respond to ArmStay/ArmAway/DisArm yet you are receiving messages from the system.  For example, you are seeing your Zone tiles activate when you open/close a door
+* Messages from the system indicate your Arduino, AD2Pi and Device Handler are installed and communicating, however, the AD2Pi is not communicating with the Alarm Panel.  You should see a steady LED heartbeat on the AD2Pi along with this message.  Check the following:
+* You have set a valid address for the AD2Pi to communicate with the panel and the address you sent to AD2Pi matches the address you activated on your Vista20P.  Note for Vista10 systems, you always use ADDRESS=31.
+* You have entered the correct four digit numeric passcode in the Device Handler Preferences (4 vertical dots)
+* The keypad address that you selected for the AD2Pi is in conflict with an exisiting physical keypad.   The AD2Pi needs to be set at a unique address.  Exception is Vista10 units where all keypads use the same address (31).
+* Replace the jumper wires for the D0 and D1 ports on the AD2Pi to be sure there is not a short
+
+##TROUBLESHOOTING USING Live Logging
+You can go to api.graph.smartthings.com and open the Live Logging Tab.  This can give you some useful diagnostics, in case your system is not working as expected.
 
 ##Credits
 
