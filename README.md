@@ -267,12 +267,11 @@ Have fun integrating!
     * MASK=00000F00.   
   * Remember, Its good practice to delete your config command once your are done and leave the config field null.
 
-* Your system will not respond to ArmStay/ArmAway/DisArm yet you are receiving messages from the system.  For example, you are seeing your Zone tiles activate when you open/close a door
-* Messages from the system indicate your Arduino, AD2Pi and Device Handler are installed and communicating, however, the AD2Pi is not communicating with the Alarm Panel.  You should see a steady LED heartbeat on the AD2Pi along with this message.  Check the following:
-* You have set a valid address for the AD2Pi to communicate with the panel and the address you sent to AD2Pi matches the address you activated on your Vista20P.  Note for Vista10 systems, you always use ADDRESS=31.
-* You have entered the correct four digit numeric passcode in the Device Handler Preferences (4 vertical dots)
-* The keypad address that you selected for the AD2Pi is in conflict with an exisiting physical keypad.   The AD2Pi needs to be set at a unique address.  Exception is Vista10 units where all keypads use the same address (31).
-* Replace the jumper wires for the D0 and D1 ports on the AD2Pi to be sure there is not a short
+* Your system will not respond to ArmStay/ArmAway/DisArm yet you are receiving messages from the system.  For example, you are seeing your Zone tiles activate when you open/close a door.  Messages from the system indicate your Arduino, AD2Pi and Device Handler are installed and communicating, however, the AD2Pi is not communicating with the Alarm Panel.  You should see a steady LED heartbeat on the AD2Pi along with this message.  Check the following:
+    * You have set a valid address for the AD2Pi to communicate with the panel and the address you sent to AD2Pi matches the address you activated on your Vista20P.  Note for Vista10 systems, you always use ADDRESS=31.
+    * You have entered the correct four digit numeric passcode in the Device Handler Preferences (4 vertical dots)
+    * The keypad address that you selected for the AD2Pi is in conflict with an exisiting physical keypad.   The AD2Pi needs to be set at a unique address.  Exception is Vista10 units where all keypads use the same address (31).
+    * Replace the jumper wires for the D0 and D1 ports on the AD2Pi to be sure there is not a short
 
 ##TROUBLESHOOTING USING Live Logging
 You can go to api.graph.smartthings.com and open the Live Logging Tab.  This can give you some useful diagnostics, in case your system is not working as expected.
