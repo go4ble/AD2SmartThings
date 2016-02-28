@@ -361,10 +361,11 @@ def parse(String description)
 //	log.debug "Parsing: ${description}"
 
 	def msg = zigbee.parse(description)?.text
-    log.info "Alarm Message Is:'${msg}'"
+//    log.debug "Alarm Message Is:'${msg}'"
 
 	if (!msg.contains("ping") && msg.trim().length() > 0) {
 		result << createEvent(name: "msg", value: msg)  //display message to message tile
+        log.info "Alarm Message Is:'${msg}'"
     	
         if (msg.contains("..."))  {
 			result << createEvent(name: "msg", value: "Having Trouble Sending")  
