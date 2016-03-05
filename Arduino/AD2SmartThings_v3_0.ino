@@ -1,6 +1,6 @@
  
 /** 
- * AD2SmartThings v3.0.0
+ * AD2SmartThings v3.0.1
  * Couple your Ademco/Honeywell Alarm to your SmartThings Graph using an AD2PI, an Arduino and a ThingShield
  * The Arduino passes all your alarm messages to your SmartThings Graph where they can be processed by the Device Type
  * Use the Device Type to control your alarm or use SmartApps to integrate with other events in your home graph
@@ -52,6 +52,7 @@
 
 #define BUFFER_SIZE 300 // max message length from ADT
 
+SmartThingsCallout_t messageCallout; // call out function forward declaration
 SmartThings smartthing(HW_SERIAL3, messageCallout);  //constructor for hardware serial port with ST_Anything Library
 
 // set global variables
