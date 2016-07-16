@@ -1,6 +1,6 @@
  
 /** 
- * AD2SmartThings v4.2
+ * AD2SmartThings v4_2_2
  * Couple your Ademco/Honeywell Alarm to your SmartThings Graph using an AD2PI, an Arduino and a ThingShield
  * The Arduino passes all your alarm messages to your SmartThings Graph where they can be processed by the Device Type
  * Use the Device Type to control your alarm or use SmartApps to integrate with other events in your home graph
@@ -56,13 +56,14 @@ SmartThings smartthing(HW_SERIAL3, messageCallout);  //constructor for hardware 
 
 // set global variables
 char buffer[BUFFER_SIZE];  //stores characters in AD2Pi to build up a message
-boolean isDebugEnabled=false;  //set to true to debug
+boolean isDebugEnabled=true;  //set to true to debug
 //For debugging purposes you can turn on different levels of logging:
 //1 (Low Verbosity) - Zone and Command messages that are sent to SmartThings
 //2 (Medium Verbosity) - Low Verbosity messages, AD2PI configuration from SmartThings, print out of all zone status after each fault
 //3 (High Verbosity) - Low and Medium Verbosity messages, raw data messages from AD2PI
 int debugVerbosity=0; 
 int bufferIdx;  //counts characters as they come in from AD2Pi
+String previousStr;
 String previousChimeStatus;
 String previousAlarmStatus;
 String previousPowerStatus;
@@ -122,20 +123,44 @@ void loop() {
 
 //Process AD2 messages
 void processAD2() {
+  
   // create String object
   buffer[bufferIdx] = '\0'; //adds null at end of buffer
   bufferIdx = 0; // reset  counter for next message
   String str(buffer);
+  
+  //handle AD2Pi messages
+  
+  //first, check to see if  message is different.  
+      if (str.equals(previousStr) && previousStr.indexOf("DISARMED")>=0)
+      {
+      // do nothing to avoid excessive logging to SmartThings hub and quickly return to loop
+      return;
+      }
+      
+  //check for AD2Pi messages that do not require action
+  previousStr=str;
   if (str.indexOf("!RFX:") >= 0 || str.indexOf("!EXP:") >= 0 || str.equals("!>null")) {
     // do nothing
-    serialLog("Skipping SmartThings Update - Found !RFX or !EXP or !>null: " + str, 2);
-  } else if (str.indexOf("!CONFIG>ADDRESS=") >= 0) {
-    serialLog("SmartThings Update - Config Command Processed: " + str, 1);
+//    serialLog("Skipping SmartThings Update - Found !RFX or !EXP or !>null: " + str, 2);
+  return;
+  } 
+
+  //AD2Pi messages that should be passed to device handler to display but no action required
+
+  if (str.indexOf("!CONFIG>ADDRESS=") >= 0) {
+//    serialLog("SmartThings Update - Config Command Processed: " + str, 1);
     smartthing.send(str.substring(8,18));
     delay (3000);
-  } else if (str.indexOf("!Sending.done") >= 0) {
+    return;
+  } 
+  if (str.indexOf("!Sending.done") >= 0) {
     smartthing.send(str);
-  } else {
+    return;
+  } 
+  
+  //AD2Pi messages that require action by the device handler
+  
     StaticJsonBuffer<200> jsonBuffer;
     JsonObject& stMessage = jsonBuffer.createObject();
     char stMessagBbuffer[256];
@@ -183,7 +208,7 @@ void processAD2() {
       stMessage["chimeStatus"] = chimeStatus;
       stMessage["keypadMsg"] = keypadMsg;
       previousChimeStatus = chimeStatus;
-      serialLog("Chime status changed to " + chimeStatus + ", updating SmartThings", 1);
+//     serialLog("Chime status changed to " + chimeStatus + ", updating SmartThings", 1);
     }
 
     String alarmStatus;
@@ -206,7 +231,7 @@ void processAD2() {
       stMessage["alarmStatus"] = alarmStatus;
       zoneStatusList[0] = 99;
       previousAlarmStatus = alarmStatus;
-      serialLog("Alarm status changed to " + alarmStatus + ", updating SmartThings: " + keypadMsg, 1);
+//      serialLog("Alarm status changed to " + alarmStatus + ", updating SmartThings: " + keypadMsg, 1);
     }
     
     if (isDebugEnabled) {
@@ -218,7 +243,7 @@ void processAD2() {
       serialMsg = serialMsg + "alarmStatus: " + alarmStatus + ", ";
       serialMsg = serialMsg + "zoneString: " + zoneString + ", ";
       serialMsg = serialMsg + "keypadMsg: " + keypadMsg;     
-      serialLog(serialMsg, 1);
+      Serial.println(serialMsg);
     }
     
     String faultList;
@@ -227,7 +252,7 @@ void processAD2() {
       if (keypadMsg.indexOf("Hit * for faults") >= 0) {
         String sendCommand = "***";
         Serial1.println(sendCommand);  //send AD2Pi the command to pass on to Alarm Panel
-        serialLog("Faults were not displayed, Sent AD2Pi: " + sendCommand, 1);
+//        serialLog("Faults were not displayed, Sent AD2Pi: " + sendCommand, 1);
       } else if (alarmStatus.indexOf("arming") >= 0 || keypadMsg.indexOf("DISARMED") >= 0) {
         if (zoneStatusList[0] > 0) {
           faultList = getActiveList(1, numZones + 1);
@@ -235,16 +260,16 @@ void processAD2() {
           stMessage["keypadMsg"] = keypadMsg;
           stMessage["inactiveList"] = faultList;
           if (alarmStatus.indexOf("arming") >= 0) {
-            serialLog("Message contains Exit Now - faultList: " + faultList, 1);
+//            serialLog("Message contains Exit Now - faultList: " + faultList, 1);
           } else {
-            serialLog("Message contains disarmed - faultList: " + faultList, 1);
+ //           serialLog("Message contains disarmed - faultList: " + faultList, 1);
           }
         } else {
           //Do nothing to reduce excessive logging
           if (alarmStatus.indexOf("arming") >= 0) {
-            serialLog("Message contains Exit Now - no faults skipping SmartThings Update", 1);
+//            serialLog("Message contains Exit Now - no faults skipping SmartThings Update", 1);
           } else {
-            serialLog("Message contains disarmed - no faults skipping SmartThings Update", 1);
+//            serialLog("Message contains disarmed - no faults skipping SmartThings Update", 1);
           }
         }
       } else {
@@ -256,14 +281,14 @@ void processAD2() {
           //Send only 1 new fault since others were previously sent
           stMessage["keypadMsg"] = keypadMsg;
           stMessage["activeZone"] = String(zoneNumber);
-          serialLog("New fault detected: " + String(zoneNumber), 1);
+//          serialLog("New fault detected: " + String(zoneNumber), 1);
           if (isDebugEnabled && debugVerbosity >= 2) {
             printArray(zoneStatusList, numZones + 1);
           }
         } else {  
           if (zoneNumber == lastZone && zoneStatusList[0] == 1) {
             //Do nothing: Only 1 fault repeating
-            serialLog("Fault repeating: zoneNumber(" + String(zoneNumber) + ") == lastZone(" + String(lastZone) + ")", 1);
+//           serialLog("Fault repeating: zoneNumber(" + String(zoneNumber) + ") == lastZone(" + String(lastZone) + ")", 1);
           } else if (zoneNumber == lastZone && zoneStatusList[0] > 1) {
             //Faults(s) dropped from list.  Gather a list of those zones and mark inactive.
             faultList = getActiveList(1, numZones + 1);
@@ -273,14 +298,14 @@ void processAD2() {
             zoneStatusList[0] = zoneStatusList[0] + 1;
             stMessage["keypadMsg"] = keypadMsg;
             stMessage["inactiveList"] = String(faultList);
-            serialLog("zoneNumber(" + String(zoneNumber) + ") == lastZone(" + String(lastZone) + "): Faults Dropped from list and marked inactive: " + String(faultList), 1);
+ //           serialLog("zoneNumber(" + String(zoneNumber) + ") == lastZone(" + String(lastZone) + "): Faults Dropped from list and marked inactive: " + String(faultList), 1);
           } else if (zoneNumber < lastZone) {
             //Fault list starting over, determine if any faults dropped from list between zone 1 and current zone
             faultList = getActiveList(1, zoneNumber);
             if (faultList != "") {
               stMessage["keypadMsg"] = keypadMsg;
               stMessage["inactiveList"] = String(faultList);
-              serialLog("zoneNumber(" + String(zoneNumber) + ") < lastZone(" + String(lastZone) + "): Faults Dropped from list and marked inactive: " + String(faultList), 1);
+//              serialLog("zoneNumber(" + String(zoneNumber) + ") < lastZone(" + String(lastZone) + "): Faults Dropped from list and marked inactive: " + String(faultList), 1);
             }
             lastZone = zoneNumber;
           } else if (zoneNumber > lastZone) {
@@ -289,7 +314,7 @@ void processAD2() {
             if (faultList != "") {
               stMessage["keypadMsg"] = keypadMsg;
               stMessage["inactiveList"] = String(faultList);
-              serialLog("zoneNumber(" + String(zoneNumber) + ") > lastZone(" + String(lastZone) + "): Faults Dropped from list and marked inactive: " + String(faultList), 1);
+//              serialLog("zoneNumber(" + String(zoneNumber) + ") > lastZone(" + String(lastZone) + "): Faults Dropped from list and marked inactive: " + String(faultList), 1);
             }
             lastZone = zoneNumber;
           }
@@ -297,7 +322,7 @@ void processAD2() {
       }
     } else {
       stMessage["keypadMsg"] = str;
-      serialLog("keypadMsg length = 0, sent the following to SmartThings: " + str, 2);
+//      serialLog("keypadMsg length = 0, sent the following to SmartThings: " + str, 2);
     }
     stMessage.printTo(stMessagBbuffer, sizeof(stMessagBbuffer));
     if (String(stMessagBbuffer) != "{}") {
@@ -337,31 +362,30 @@ void processAD2() {
       if (sendMessage.length() > 63) {
         sendMessage = sendMessage.substring(1, 63);
       }
-      serialLog("Sent to SmartThings: " + sendMessage, 0);
+//      serialLog("Sent to SmartThings: " + sendMessage, 0);
       smartthing.send(sendMessage);
     }
   }
-}
 
 void messageCallout(String message) { 
   String code;
   String cmd;
   if(message.length() > 0) { //avoids processing ping from hub
     String code = message.substring(0,6);
-	serialLog("Received from hub:" + message, 2);
-    serialLog("code =" + code, 2);
+//	serialLog("Received from hub:" + message, 2);
+//    serialLog("code =" + code, 2);
     String cmd = message.substring(6);
-    serialLog("cmd =" + cmd, 2);
+//    serialLog("cmd =" + cmd, 2);
     if (code.equals("[CODE]")) {
 	  //Check to see if arming away and if alarm is ready, if not send notification that alarm cannot be armed.
 	  //This won't work for arming stay since motions could be active that don't affect arm stay.
 	  if (cmd == "2" && zoneStatusList[0] > 0) {
-	    serialLog("Sent to SmartThings: " + String("||disarmed|Alarm not ready cannot arm|||"), 0);
+//	    serialLog("Sent to SmartThings: " + String("||disarmed|Alarm not ready cannot arm|||"), 0);
 	    smartthing.send(String("||disarmed|Alarm not ready cannot arm|||"));
 	  } else {
 	    String sendCommand = cmd;
 	    Serial1.println(sendCommand);  //send AD2Pi the command to pass on to Alarm Panel
-	    serialLog("Sent AD2Pi: " + sendCommand, 0);
+//	    serialLog("Sent AD2Pi: " + sendCommand, 0);
 	  }
     }
     if (code.equals("[CONF]")) {
@@ -371,7 +395,7 @@ void messageCallout(String message) {
       }
     }
     else if (code.equals("[FUNC]")) {
-      serialLog("Sending AD2Pi ASCII:" + cmd, 2);
+//      serialLog("Sending AD2Pi ASCII:" + cmd, 2);
       if (cmd.equals("A")) {
         Serial1.write(1);
         Serial1.write(1);
@@ -441,8 +465,8 @@ void printArray(int *a, int n) {
   Serial.println();
 }
 
-void serialLog(String serialMsg, int verbosity) {
-  if (isDebugEnabled && debugVerbosity >= verbosity) {
-    Serial.println(serialMsg);
-  }
-}
+//void serialLog(String serialMsg, int verbosity) {
+//  if (isDebugEnabled && debugVerbosity >= verbosity) {
+//    Serial.println(serialMsg);
+//  }
+//}
