@@ -4,7 +4,7 @@
  *  Honeywell/Ademco alarms are usually installed by ADT and other companies.  Check your alarm panel to verify
  *  This SmartThings Device Type Code Works With Arduino Connected To An AD2Pi Wired To A Honeywell/Ademco Home Alarm
  *
- *	By Stan Dotson (stan@dotson.info) 
+ *	By Stan Dotson (stan@dotson.info) and Michael Ritchie
  *
  *	Credits:
  *  Lots of good ideas from @craig whose code can be found at https://gist.github.com/e5b30109fdaec805d474.git
@@ -31,13 +31,21 @@ preferences {
     // To prevent excessive use, the configCommand value can be reset to null after sending to device
     // pressing the "Config" tile and sending null will harmlessly request the alarm panel to report out its Configurtion into the message tile.
     
+<<<<<<< HEAD
     	input(name: "configCommand",type: "text", title: "AD2Pi Configuration Command", description: "for example ADDRESS=31", defaultValue: '', required: false, displayDuringSetup: true)
 	input(name: "securityCode", type: "text", title: "Enter your 4 digit homeowner security code", description: "enter 4 digit code", defaultValue:"", required: true, displayDuringSetup: true)
     	input(name: "panicKey", type: "enum", title: "Select Panic Key Configured By Your Installer", description: "(A:1&*) or (B:*&#) or (C:3&#)", options: ["A","B","C"], required: false)
+=======
+    input("configCommand", "text", title: "AD2Pi Configuration Command", description: "for example ADDRESS=31", defaultValue: '', required: false, displayDuringSetup: true)
+	input(name: "securityCode", type: "text", title: "Enter your 4 digit homeowner security code", description: "enter 4 digit code", defaultValue:"", required: true, displayDuringSetup: true)
+    input("panicKey","enum", title: "Select Panic Key Configured By Your Installer", description: "(A:1&*) or (B:*&#) or (C:3&#)", options: ["A","B","C"], required: true, displayDuringSetup: true)
+}
+>>>>>>> pr/10
 
 }
 
 metadata {
+<<<<<<< HEAD
 	definition (name: "AD2SmartThings v2.4.3", version: "2.4.3",author: "stan@dotson.info") 
 	{
 	capability "Switch"  // <on> will arm alarm in "stay" mode; same as armStay
@@ -45,6 +53,16 @@ metadata {
 	capability "Alarm" // enables <both> or <siren> to  immediately alarm the system
         capability "Motion Sensor"  //allows your alarm panel to mimic a motion sensor.  The motion sensor will be active when system alarms
 
+=======
+	definition (name: "AD2SmartThings v4.2", version: "4.2",author: "stan@dotson.info") 
+    	{
+
+	capability "Switch"  // <on> will arm alarm in "stay" mode; same as armStay
+        capability "Lock"  // <lock> will arm alarm in "away" mode; same as armAway
+	capability "Alarm" // enables <both> or <siren> to  immediately alarm the system
+	capability "Motion Sensor" //allows your alarm panel to mimic a motion sensor. The motion sensor will be active when system alarms
+        
+>>>>>>> pr/10
         command "disarm"
         command "armStay"
         command "armAway"
@@ -56,6 +74,7 @@ metadata {
         
         attribute "system", "string"
         attribute "msg", "string"
+        attribute "alertMsg", "string"
 
 	}
 }
@@ -120,6 +139,7 @@ tiles
 		state "default", label:'${currentValue}'
 	}
  
+<<<<<<< HEAD
 //*****************************************************************************************************************************************
 //*****************************************************************************************************************************************
 //*****************************************************************************************************************************************
@@ -130,35 +150,57 @@ tiles
  // Begin customization section
 
    	standardTile("zoneOne", "device.zoneOne", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+=======
+ 
+ // tiles to report activity in a given zone.  Feel free to customize by changing the label in label: 'custom name' 
+ 
+   	standardTile("zone1", "device.zone1", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+>>>>>>> pr/10
     	{
-		state "inactive", label: 'Zone One', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
-		state "active", label: 'Zone One', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
+		state "inactive", label: 'Zone 1', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
+		state "active", label: 'Zone 1', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
 	}
+<<<<<<< HEAD
 	standardTile("zoneTwo", "device.zoneTwo", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+=======
+    	standardTile("zone2", "device.zone2", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+>>>>>>> pr/10
     	{
-		state "inactive", label: 'Zone Two', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
-        	state "active", label: 'Zone Two', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
+		state "inactive", label: 'Zone 2', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
+        	state "active", label: 'Zone 2', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
    	}
+<<<<<<< HEAD
 	standardTile("zoneThree", "device.zoneThree", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+=======
+    	standardTile("zone3", "device.zone3", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+>>>>>>> pr/10
     	{
-		state "inactive", label: 'Zone Three', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
-		state "active", label: 'Zone Three', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
+		state "inactive", label: 'Zone 3', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
+		state "active", label: 'Zone 3', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
 	}
+<<<<<<< HEAD
  	standardTile("zoneFour", "device.zoneFour", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
     	{
 		state "inactive", label: 'Zone Four', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
 		state "active", label: 'Zone Four', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
+=======
+ 	standardTile("zone4", "device.zone4", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+    	{	
+		state "inactive", label: 'Zone 4', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
+		state "active", label: 'Zone 4', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
+>>>>>>> pr/10
 	}
-   	standardTile("zoneFive", "device.zoneFive", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+   	standardTile("zone5", "device.zone5", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
     	{
-		state "inactive", label: 'Zone Five', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
-		state "active", label: 'Zone Five', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
+		state "inactive", label: 'Zone 5', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
+		state "active", label: 'Zone 5', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
 	}
-  	standardTile("zoneSix", "device.zoneSix", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+  	standardTile("zone6", "device.zone6", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
     	{
-		state "inactive", label: 'Zone Six', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
-		state "active", label: 'Zone Six', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
+		state "inactive", label: 'Zone 6', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
+		state "active", label: 'Zone 6', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
 	}                      
+<<<<<<< HEAD
   	standardTile("zoneSeven", "device.zoneSeven", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
     	{
 		state "inactive", label: 'Zone Seven', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
@@ -175,154 +217,197 @@ tiles
 		state "active", label: 'Zone Nine', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
 	}     
     standardTile("zoneTen", "device.zoneTen", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+=======
+    standardTile("zone7", "device.zone7", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+>>>>>>> pr/10
     	{
-		state "inactive", label: 'Zone Ten', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
-		state "active", label: 'Zone Ten', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
-	}  
-   	standardTile("zoneEleven", "device.zoneEleven", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
-    	{
-		state "inactive", label: 'Zone Eleven', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
-		state "active", label: 'Zone Eleven', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
+		state "inactive", label: 'Zone 7', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
+		state "active", label: 'Zone 7', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
 	}
-	standardTile("zoneTwelve", "device.zoneTwelve", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+	standardTile("zone8", "device.zone8", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
     	{
-		state "inactive", label: 'Zone Twelve', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
-        	state "active", label: 'Zone Twelve', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
+		state "inactive", label: 'Zone 8', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
+		state "active", label: 'Zone 8', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
+	}
+	standardTile("zone9", "device.zone9", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+    	{
+		state "inactive", label: 'Zone 9', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
+		state "active", label: 'Zone 9', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
+	}
+	standardTile("zone10", "device.zone10", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+    	{
+		state "inactive", label: 'Zone 10', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
+		state "active", label: 'Zone 10', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
+	}  
+   	standardTile("zone11", "device.zone11", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+    	{
+		state "inactive", label: 'Zone 11', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
+		state "active", label: 'Zone 11', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
+	}
+	standardTile("zone12", "device.zone12", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+    	{
+		state "inactive", label: 'Zone 12', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
+        	state "active", label: 'Zone 12', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
    	}
-	standardTile("zoneThirteen", "device.zoneThirteen", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+	standardTile("zone13", "device.zone13", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
     	{
-		state "inactive", label: 'Zone Thirteen', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
-		state "active", label: 'Zone Thirteen', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
+		state "inactive", label: 'Zone 13', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
+		state "active", label: 'Zone 13', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
 	}
- 	standardTile("zoneFourteen", "device.zoneFourteen", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+ 	standardTile("zone14", "device.zone14", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
     	{
-		state "inactive", label: 'Zone Fourteen', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
-		state "active", label: 'Zone Fourteen', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
+		state "inactive", label: 'Zone 14', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
+		state "active", label: 'Zone 14', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
 	}
-   	standardTile("zoneFifteen", "device.zoneFifteen", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+   	standardTile("zone15", "device.zone15", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
     	{
-		state "inactive", label: 'Zone Fifteen', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
-		state "active", label: 'Zone Fifteen', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
+		state "inactive", label: 'Zone 15', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
+		state "active", label: 'Zone 15', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
 	}
-  	standardTile("zoneSixteen", "device.zoneSixteen", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+  	standardTile("zone16", "device.zone16", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
     	{
-		state "inactive", label: 'Zone Sixteen', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
-		state "active", label: 'Zone Sixteen', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
+		state "inactive", label: 'Zone 16', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
+		state "active", label: 'Zone 16', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
 	}                      
-  	standardTile("zoneSeventeen", "device.zoneSeventeen", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+  	standardTile("zone17", "device.zone17", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
     	{
-		state "inactive", label: 'Zone Seventeen', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
-		state "active", label: 'Zone Seven', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
+		state "inactive", label: 'Zone 17', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
+		state "active", label: 'Zone 17', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
 	}  
-  	standardTile("zoneEighteen", "device.zoneEighteen", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+  	standardTile("zone18", "device.zone18", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
     	{
-		state "inactive", label: 'Zone Eighteen', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
-		state "active", label: 'Zone Eighteen', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
+		state "inactive", label: 'Zone 18', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
+		state "active", label: 'Zone 18', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
 	}  
-  	standardTile("zoneNineteen", "device.zoneNineteen", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+  	standardTile("zone19", "device.zone19", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
     	{
-		state "inactive", label: 'Zone Nineteen', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
-		state "active", label: 'Zone Nineteen', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
+		state "inactive", label: 'Zone 19', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
+		state "active", label: 'Zone 19', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
 	}
+<<<<<<< HEAD
     standardTile("zoneTwenty", "device.zoneTwenty", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+=======
+    	standardTile("zone20", "device.zone20", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+>>>>>>> pr/10
     	{
-		state "inactive", label: 'Zone Twenty', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
-		state "active", label: 'Zone Twenty', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
+		state "inactive", label: 'Zone 20', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
+		state "active", label: 'Zone 20', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
 	}  
+<<<<<<< HEAD
    	standardTile("zoneTwentyone", "device.zoneTwentyone", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
 	 {
 		state "inactive", label: 'Zone Twentyone', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
 		state "active", label: 'Zone Twentyone', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
-	}
-	standardTile("zoneTwentytwo", "device.zoneTwentytwo", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+=======
+   	standardTile("zone21", "device.zone21", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
     	{
-		state "inactive", label: 'Zone Twentytwo', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
-        state "active", label: 'Zone Twentytwo', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
+		state "inactive", label: 'Zone 21', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
+		state "active", label: 'Zone 21', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
+>>>>>>> pr/10
+	}
+	standardTile("zone22", "device.zone22", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+    	{
+		state "inactive", label: 'Zone 22', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
+        	state "active", label: 'Zone 22', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
    	}
+<<<<<<< HEAD
 	standardTile("zoneTwentythree", "device.Twentythree", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
 	{
 		state "inactive", label: 'Zone Twentythree', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
 		state "active", label: 'Zone Twentythree', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
-	}
- 	standardTile("zoneTwentyfour", "device.zoneTwentyfour", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+=======
+	standardTile("zone23", "device.23", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
     	{
-		state "inactive", label: 'Zone Twentyfour', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
-		state "active", label: 'Zone Twentyfour', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
+		state "inactive", label: 'Zone 23', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
+		state "active", label: 'Zone 23', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
+>>>>>>> pr/10
 	}
-   	standardTile("zoneTwentyfive", "device.zoneTwentyfive", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+ 	standardTile("zone24", "device.zone24", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
     	{
-		state "inactive", label: 'Zone Twentyfive', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
-		state "active", label: 'Zone Twentyfive', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
+		state "inactive", label: 'Zone 24', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
+		state "active", label: 'Zone 24', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
 	}
-  	standardTile("zoneTwentysix", "device.zoneTwentysix", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+   	standardTile("zone25", "device.zone25", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
     	{
-		state "inactive", label: 'Zone Twentysix', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
-		state "active", label: 'Zone Twentysix', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
+		state "inactive", label: 'Zone 25', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
+		state "active", label: 'Zone 25', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
+	}
+  	standardTile("zone26", "device.zone26", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+    	{
+		state "inactive", label: 'Zone 26', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
+		state "active", label: 'Zone 26', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
 	}                      
-  	standardTile("zoneTwentyseven", "device.zoneTwentyseven", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+  	standardTile("zone27", "device.zone27", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
     	{
-		state "inactive", label: 'Zone Twentyseven', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
-		state "active", label: 'Zone Twentyseven', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
+		state "inactive", label: 'Zone 27', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
+		state "active", label: 'Zone 27', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
 	}  
-  	standardTile("zoneTwentyeight", "device.zoneTwentyeight", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+  	standardTile("zone28", "device.zone28", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
     	{
-		state "inactive", label: 'Zone Twentyeight', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
-		state "active", label: 'Zone Twentyeight', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
+		state "inactive", label: 'Zone 28', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
+		state "active", label: 'Zone 28', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
 	}  
-  	standardTile("zoneTwentynine", "device.zoneTwentynine", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+  	standardTile("zone29", "device.zone29", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
     	{
-		state "inactive", label: 'Zone Twentynine', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
-		state "active", label: 'Zone Twentynine', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
+		state "inactive", label: 'Zone 29', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
+		state "active", label: 'Zone 29', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
 	}
-    	standardTile("zoneThirty", "device.zoneThirty", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+    	standardTile("zone30", "device.zone30", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
     	{
-		state "inactive", label: 'Zone Thirty', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
-		state "active", label: 'Zone Thirty', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
+		state "inactive", label: 'Zone 30', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
+		state "active", label: 'Zone 30', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
 	}   
-   	standardTile("zoneThirtyone", "device.zoneThirtyone", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+   	standardTile("zone31", "device.zone31", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
     	{
-		state "inactive", label: 'Zone Thirtyone', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
-		state "active", label: 'Zone Thirtyone', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
+		state "inactive", label: 'Zone 31', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
+		state "active", label: 'Zone 31', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
 	}
+<<<<<<< HEAD
 	standardTile("zoneThirtytwo", "device.zoneThirtytwo", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
     	{
 		state "inactive", label: 'Zone Thirtytwo', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
         state "active", label: 'Zone Thirtytwo', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
+=======
+	standardTile("zone32", "device.zone32", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+	{
+		state "inactive", label: 'Zone 32', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
+        	state "active", label: 'Zone 32', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
+>>>>>>> pr/10
    	}
-	standardTile("zoneThirtythree", "device.Thirtythree", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+	standardTile("zone33", "device.33", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
     	{
-		state "inactive", label: 'Zone Thirtythree', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
-		state "active", label: 'Zone Thirtythree', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
+		state "inactive", label: 'Zone 33', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
+		state "active", label: 'Zone 33', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
 	}
- 	standardTile("zoneThirtyfour", "device.zoneThirtyfour", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+ 	standardTile("zone34", "device.zone34", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
     	{
-		state "inactive", label: 'Zone Thirtyfour', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
-		state "active", label: 'Zone Thirtyfour', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
+		state "inactive", label: 'Zone 34', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
+		state "active", label: 'Zone 34', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
 	}
-   	standardTile("zoneThirtyfive", "device.zoneThirtyfive", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+   	standardTile("zone35", "device.zone35", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
     	{
-		state "inactive", label: 'Zone Thirtyfive', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
-		state "active", label: 'Zone Thirtyfive', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
+		state "inactive", label: 'Zone 35', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
+		state "active", label: 'Zone 35', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
 	}
-  	standardTile("zoneThirtysix", "device.zoneThirtysix", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+  	standardTile("zone36", "device.zone36", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
     	{
-		state "inactive", label: 'Zone Thirtysix', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
-		state "active", label: 'Zone Thirtysix', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
+		state "inactive", label: 'Zone 36', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
+		state "active", label: 'Zone 36', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
 	}                      
-  	standardTile("zoneThirtyseven", "device.zoneThirtyseven", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+  	standardTile("zone37", "device.zone37", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
     	{
-		state "inactive", label: 'Zone Thirtyseven', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
-		state "active", label: 'Zone Thirtyseven', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
+		state "inactive", label: 'Zone 37', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
+		state "active", label: 'Zone 37', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
 	}  
-  	standardTile("zoneThirtyeight", "device.zoneThirtyeight", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+  	standardTile("zone38", "device.zone38", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
     	{
-		state "inactive", label: 'Zone Thirtyeight', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
-		state "active", label: 'Zone Thirtyeight', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
+		state "inactive", label: 'Zone 38', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
+		state "active", label: 'Zone 38', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
 	}  
-  	standardTile("zoneThirtynine", "device.zoneThirtynine", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+  	standardTile("zone39", "device.zone39", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
     	{
-		state "inactive", label: 'Zone Thirtynine', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
-		state "active", label: 'Zone Thirtynine', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
+		state "inactive", label: 'Zone 39', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
+		state "active", label: 'Zone 39', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
 	}
 
 
@@ -330,16 +415,25 @@ tiles
 //To customize your device type to the number of zones in your system, simply trim the argument for the <details> command
 //to equal the number of zones. 
 //For example, for 1 zone systems:
-//  	details(["main", "disarm","chime","stay", "away", "panic", "msg", "zoneOne", "configAD2Pi"])
+//  	details(["main", "disarm","chime","stay", "away", "panic", "msg", "zone1", "configAD2Pi"])
 //For example, for 4 zones:
-//  	details(["main", "disarm","chime","stay", "away", "panic", "msg", "zoneOne","zoneTwo", "zoneThree","zoneFour", "configAD2Pi"])
+//  	details(["main", "disarm","chime","stay", "away", "panic", "msg", "zone1","zone2", "zone3","zone4", "configAD2Pi"])
 //The maximum number of zones supported by this device type is 36 zones:
+<<<<<<< HEAD
 // 		details(["main", "disarm","chime","stay", "away", "panic", "msg", "zoneOne","zoneTwo", "zoneThree","zoneFour","zoneFive","zoneSix", "zoneSeven", "zoneEight", "zoneNine", "zoneTen","zoneEleven","zoneTwelve","zoneThirteen","zoneFourteen","zoneFifteen","zoneSixteen","zoneSeventeen","zoneEighteen","zoneNineteen","zoneTwenty","zoneTwentyone","zoneTwentytwo","zoneTwentythree","zoneTwentyfour","zoneTwentyfive","zoneTwentysix","zoneTwentyseven","zoneTwentyeight","zoneTwentynine","zoneThirty","zoneThirtyone","zoneThirtytwo","zoneThirtythree","zoneThirtyfour","zoneThirtyfive","zoneThirtysix","zoneThirtyseven","zoneThirtyeight","zoneThirtynine", "configAD2Pi"])
+=======
+// 		details(["main", "disarm","chime","stay", "away", "panic", "msg", "zone1","zone2", "zone3","zone4","zone5","zone6","zone10","zone11","zone12","zone13","zone14","zone15","zone16","zone17","zone18","zone19","zone20","zone21","zone22","zone23","zone24","zone25","zone26","zone27","zone28","zone29","zone30","zone31","zone32","zone33","zone34","zone35","zone36","zone37","zone38","zone39", "configAD2Pi"])
+//
+>>>>>>> pr/10
 //
 
 	main(["main"])
+<<<<<<< HEAD
  	details(["main", "disarm","chime","stay", "away", "panic", "msg", "zoneOne","zoneTwo", "zoneThree","zoneFour","zoneFive","zoneSix", "zoneSeven", "zoneEight", "zoneNine", "zoneTen","zoneEleven","zoneTwelve","zoneThirteen","zoneFourteen","zoneFifteen","zoneSixteen","zoneSeventeen","zoneEighteen","zoneNineteen","zoneTwenty","zoneTwentyone","zoneTwentytwo","zoneTwentythree","zoneTwentyfour","zoneTwentyfive","zoneTwentysix","zoneTwentyseven","zoneTwentyeight","zoneTwentynine","zoneThirty","zoneThirtyone","zoneThirtytwo","zoneThirtythree","zoneThirtyfour","zoneThirtyfive","zoneThirtysix","zoneThirtyseven","zoneThirtyeight","zoneThirtynine", "configAD2Pi"])
  	
+=======
+	details(["main", "disarm","chime","stay", "away", "panic", "msg", "zone1","zone2", "zone3","zone4","zone5","zone6", "zone10","zone11","zone12","zone13","zone14","zone15","zone16","zone17","zone18","zone19","zone20","zone21","zone22","zone23","zone24","zone25","zone26","zone27","zone28","zone29","zone30","zone31","zone32","zone33","zone34","zone35","zone36","zone37","zone38","zone39", "configAD2Pi"])
+>>>>>>> pr/10
 }
 
 //........................................................................................................................................
@@ -353,11 +447,15 @@ tiles
 
 
 // Parse incoming device messages to generate events
-def parse(String description) 
-{
-	
+def parse(String description) {
+  	//log.debug "Parsing: ${description}"
+    def isDebugEnabled = false
+  	
   	def result = []
+    def rawMsg = zigbee.parse(description)?.text
+    if (isDebugEnabled) log.debug "rawMsg: ${rawMsg}"
     
+<<<<<<< HEAD
 //	log.debug "Parsing: ${description}"
 
 	def msg = zigbee.parse(description)?.text
@@ -662,6 +760,79 @@ def parse(String description)
 //		log.debug "${result?.descriptionText}"
 		return result
 	}
+=======
+    if (rawMsg.contains("ping") || rawMsg.equals("") || rawMsg == null) {
+    	// Do Nothing
+    } else if (rawMsg.contains("...."))  {
+		result << createEvent(name: "msg", value: "Having Trouble Sending")  
+    } else if (rawMsg.contains("!"))  {
+		result << createEvent(name: "msg", value: rawMsg)  
+    } else if (rawMsg.contains("|")) {        
+        //0:powerStatus, 1:chimeStatus, 2:alarmStatus, 3:activeZone, 4:inactiveList, 5:keypadMsg
+        String[] msgSplit = rawMsg.toString().split("[|]", 7);
+
+        def powerStatus = msgSplit[0].trim()
+        def chimeStatus = msgSplit[1].trim()
+        def alarmStatus = msgSplit[2].trim()
+		def activeZone = msgSplit[3].trim()
+        def inactiveList = msgSplit[4].trim()
+        def keypadMsg = msgSplit[5].trim()
+
+        if (powerStatus != "" && powerStatus != null) {
+            if (powerStatus == "AC") {
+                result << createEvent(name: "alertMsg", value: "Alarm on AC Power")
+            } else if (powerStatus == "BN") {
+                result << createEvent(name: "alertMsg", value: "Alarm on Battery Power: Fully Charged")
+            } else if (powerStatus == "BL") {
+                result << createEvent(name: "alertMsg", value: "Alarm on Battery Power: Low Charge")
+            }
+            if (isDebugEnabled) log.debug "powerStatus: ${powerStatus}"
+        }
+		
+        if (chimeStatus != "" && chimeStatus != null) {
+            result << createEvent(name: "chime", value: "${chimeStatus}", displayed: true, isStateChange: true, isPhysical: true)
+            if (isDebugEnabled) log.debug "chimeStatus: ${chimeStatus}"
+        }
+			
+        if (alarmStatus != "" && alarmStatus != null) {
+            if (alarmStatus == "alarm") {
+                result << createEvent(name: "alertMsg", value: "Alarm is sounding!!")
+                if (isDebugEnabled) log.debug "alertMsg: Alarm is sounding!!"
+            }
+            result << createEvent(name: "system", value: "${alarmStatus}", displayed: true, isStateChange: true, isPhysical: true)
+            if (isDebugEnabled) log.debug "alarmStatus: ${alarmStatus}"
+        }
+        
+        if (activeZone.equals("") || activeZone == null) {
+            // Do Nothing
+        } else {
+            result << createEvent(name: "zone${activeZone.trim()}", value: "active", descriptionText: alarmMsg, displayed: true, isStateChange: true, isPhysical: true)
+            if (isDebugEnabled) log.debug "Created active event for zone${activeZone.trim()}"
+        }
+        
+        if (inactiveList.equals("") || inactiveList == null) {
+            // Do Nothing
+        } else {
+            def inactiveArray = inactiveList.toString().split(",");
+            for (int i = 0; i < inactiveArray.size(); i++) {
+                result << createEvent(name: "zone${inactiveArray[i].trim()}", value: "inactive", descriptionText: alarmMsg, displayed: true, isStateChange: true, isPhysical: true)
+                if (isDebugEnabled) log.debug "Created inactive event for zone${inactiveArray[i].trim()}"
+            }
+        }
+        
+        if (keypadMsg != "" && keypadMsg != null) {
+	    result << createEvent(name: "msg", value: keypadMsg)  //display message to message tile
+            if (keypadMsg == "Alarm not ready cannot arm") {
+                if (isDebugEnabled) log.debug "alertMsg: ${keypadMsg}"
+            	result << createEvent(name: "alertMsg", value: keypadMsg)
+            }
+            if (isDebugEnabled) log.debug "keypadMsg: ${keypadMsg}"
+        }
+    } else {
+	result << createEvent(name: "msg", value: rawMsg)
+    }
+    return result
+>>>>>>> pr/10
 }
 
 // Commands sent to the device
@@ -717,9 +888,14 @@ def config()
 // If a Configuration Command was provided as input into the Preferences, this method will send the command down to the Arduino
 // which will write to the eeprom of the AD2Pi 
 {
+<<<<<<< HEAD
     	log.debug "sending AD2Pi Config Command: ${configCommand}"
     	zigbee.smartShield(text: "[CONF]${configCommand}").format()
 //  TODO: reset the configCommand value to null
+=======
+    log.debug "sending AD2Pi Config Command: ${configCommand}"
+    zigbee.smartShield(text: "[CONF]${configCommand}").format()
+>>>>>>> pr/10
 }
 
 def pressPanicOnce() 
