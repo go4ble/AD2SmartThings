@@ -14,8 +14,10 @@
  *  
  *  Zones
  *  This device type supports up to 36 zones.  All the coding is in place
- *  To adjust the number of zones that are displayed on your device, simply trim the number of zones listed in the <details> argument list (Line 326).
- *  No other code needs to be modified! 
+ *  To adjust the number of zones, simply trim the number of zones listed in the <details> argument list.
+ *  No other code needs to be modified! (however you can tidy up your event log by deleting  the additional code that refers to unused zones).
+ *  
+ *  
  *  
  */
  
@@ -31,29 +33,13 @@ preferences {
     // To prevent excessive use, the configCommand value can be reset to null after sending to device
     // pressing the "Config" tile and sending null will harmlessly request the alarm panel to report out its Configurtion into the message tile.
     
-<<<<<<< HEAD
-    	input(name: "configCommand",type: "text", title: "AD2Pi Configuration Command", description: "for example ADDRESS=31", defaultValue: '', required: false, displayDuringSetup: true)
-	input(name: "securityCode", type: "text", title: "Enter your 4 digit homeowner security code", description: "enter 4 digit code", defaultValue:"", required: true, displayDuringSetup: true)
-    	input(name: "panicKey", type: "enum", title: "Select Panic Key Configured By Your Installer", description: "(A:1&*) or (B:*&#) or (C:3&#)", options: ["A","B","C"], required: false)
-=======
     input("configCommand", "text", title: "AD2Pi Configuration Command", description: "for example ADDRESS=31", defaultValue: '', required: false, displayDuringSetup: true)
 	input(name: "securityCode", type: "text", title: "Enter your 4 digit homeowner security code", description: "enter 4 digit code", defaultValue:"", required: true, displayDuringSetup: true)
     input("panicKey","enum", title: "Select Panic Key Configured By Your Installer", description: "(A:1&*) or (B:*&#) or (C:3&#)", options: ["A","B","C"], required: true, displayDuringSetup: true)
 }
->>>>>>> pr/10
 
-}
 
 metadata {
-<<<<<<< HEAD
-	definition (name: "AD2SmartThings v2.4.3", version: "2.4.3",author: "stan@dotson.info") 
-	{
-	capability "Switch"  // <on> will arm alarm in "stay" mode; same as armStay
-        capability "Lock"  // <lock> will arm alarm in "away" mode; same as armAway
-	capability "Alarm" // enables <both> or <siren> to  immediately alarm the system
-        capability "Motion Sensor"  //allows your alarm panel to mimic a motion sensor.  The motion sensor will be active when system alarms
-
-=======
 	definition (name: "AD2SmartThings v4.2", version: "4.2",author: "stan@dotson.info") 
     	{
 
@@ -62,7 +48,6 @@ metadata {
 	capability "Alarm" // enables <both> or <siren> to  immediately alarm the system
 	capability "Motion Sensor" //allows your alarm panel to mimic a motion sensor. The motion sensor will be active when system alarms
         
->>>>>>> pr/10
         command "disarm"
         command "armStay"
         command "armAway"
@@ -78,39 +63,39 @@ metadata {
 
 	}
 }
-	
+
 // Simulator metadata
 simulator {
 }
 
 // UI tile definitions
-tiles 
-{
+tiles {
+
 	standardTile("main", "device.system", width: 2, height: 2, canChangeIcon: true, canChangeBackground: true)
-		{
-			state "disarmed", label:"Disarmed", action:"disarm", icon:"st.Home.home2", backgroundColor:"#ffffff"
-			state "armedAway", label:"Armed Away", action:"disarm", icon:"st.Home.home3", backgroundColor:"#587498"
-			state "armedStay", label:"Armed Stay", action:"disarm", icon:"st.Home.home4", backgroundColor:"#587498"
+ 	{
+		state "disarmed", label:"Disarmed", action:"disarm", icon:"st.Home.home2", backgroundColor:"#ffffff"
+		state "armedAway", label:"Armed Away", action:"disarm", icon:"st.Home.home3", backgroundColor:"#587498"
+		state "armedStay", label:"Armed Stay", action:"disarm", icon:"st.Home.home4", backgroundColor:"#587498"
         	state "alarm", label:"Alarm!", action:"disarm", icon:"st.Home.home3", backgroundColor:"#E86850"
         	state "armingAway", label:"Arming Away", action:"disarm", icon:"st.Home.home3", backgroundColor:"#FFD800"
-			state "armingStay", label:"Arming Stay", action:"disarm", icon:"st.Home.home4", backgroundColor:"#FFD800"
+		state "armingStay", label:"Arming Stay", action:"disarm", icon:"st.Home.home4", backgroundColor:"#FFD800"
 	}
  	standardTile("stay", "device.system", width: 1, height: 1, decoration: "flat")
-    	{
+ 	{
         	state "disarmed", label: "Stay", action: "armStay", icon:"st.Home.home4", nextState: "armingStay"
         	state "armingStay", label:"Arming Stay", action: "disarm", icon:"st.Home.home4"
         	state "armedStay", label:"Armed Stay", action: "disarm", icon:"st.Home.home4"
   	}
         
   	standardTile("away", "device.system", width: 1, height: 1, decoration: "flat")
-    	{
+	{
        		state "disarmed", label: "Away", action: "armAway", icon:"st.Home.home3", nextState: "armingAway"
         	state "armingAway", label:"Arming Away", action: "disarm", icon:"st.Home.home3" 
        		state "armedAway", label:"Armed Away", action: "disarm", icon:"st.Home.home3"   
   	}
         
  	standardTile("disarm", "device.system", width: 1, height: 1, decoration: "flat")
-	 {
+    	{
        		state "disarmed", label:'Disarm', action: "disarm", icon:"st.Home.home2"   
  	}
     
@@ -130,65 +115,37 @@ tiles
   	}
 
 	standardTile("configAD2Pi", "device.config", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true,  decoration:"flat")
-    	{
+	{
     		state "default", label: 'AD2Pi Config', action: "config", icon: "st.secondary.refresh-icon", backgroundColor: "#ffffff"
     	}
         
    	valueTile("msg", "device.msg", width: 3, height:1, inactiveLabel: false, decoration: "flat") 
-    	{
+   	{
 		state "default", label:'${currentValue}'
 	}
  
-<<<<<<< HEAD
-//*****************************************************************************************************************************************
-//*****************************************************************************************************************************************
-//*****************************************************************************************************************************************
-//*****************************************************************************************************************************************
- // Tiles to report activity in a given zone.  Feel free to customize by changing the label in label: 'custom name' 
- // Note: Zones 7,8,9, 95,96 may be reserved by your system for Panic, Duress, Tamper, Panic and Panic, respectively.  
- // When upgrading to new version of the SmartApp, you can keep your customizations by copying and pasting this section
- // Begin customization section
-
-   	standardTile("zoneOne", "device.zoneOne", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
-=======
  
  // tiles to report activity in a given zone.  Feel free to customize by changing the label in label: 'custom name' 
  
    	standardTile("zone1", "device.zone1", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
->>>>>>> pr/10
     	{
 		state "inactive", label: 'Zone 1', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
 		state "active", label: 'Zone 1', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
 	}
-<<<<<<< HEAD
-	standardTile("zoneTwo", "device.zoneTwo", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
-=======
     	standardTile("zone2", "device.zone2", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
->>>>>>> pr/10
     	{
 		state "inactive", label: 'Zone 2', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
         	state "active", label: 'Zone 2', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
    	}
-<<<<<<< HEAD
-	standardTile("zoneThree", "device.zoneThree", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
-=======
     	standardTile("zone3", "device.zone3", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
->>>>>>> pr/10
     	{
 		state "inactive", label: 'Zone 3', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
 		state "active", label: 'Zone 3', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
 	}
-<<<<<<< HEAD
- 	standardTile("zoneFour", "device.zoneFour", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
-    	{
-		state "inactive", label: 'Zone Four', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
-		state "active", label: 'Zone Four', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
-=======
  	standardTile("zone4", "device.zone4", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
     	{	
 		state "inactive", label: 'Zone 4', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
 		state "active", label: 'Zone 4', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
->>>>>>> pr/10
 	}
    	standardTile("zone5", "device.zone5", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
     	{
@@ -200,26 +157,7 @@ tiles
 		state "inactive", label: 'Zone 6', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
 		state "active", label: 'Zone 6', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
 	}                      
-<<<<<<< HEAD
-  	standardTile("zoneSeven", "device.zoneSeven", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
-    	{
-		state "inactive", label: 'Zone Seven', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
-		state "active", label: 'Zone Seven', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
-	}     
-   	standardTile("zoneEight", "device.zoneEight", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
-    	{
-		state "inactive", label: 'Zone Eight', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
-		state "active", label: 'Zone Eight', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
-	}    
-  	standardTile("zoneNine", "device.zoneNine", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
-    	{
-		state "inactive", label: 'Zone Nine', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
-		state "active", label: 'Zone Nine', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
-	}     
-    standardTile("zoneTen", "device.zoneTen", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
-=======
     standardTile("zone7", "device.zone7", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
->>>>>>> pr/10
     	{
 		state "inactive", label: 'Zone 7', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
 		state "active", label: 'Zone 7', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
@@ -284,43 +222,25 @@ tiles
 		state "inactive", label: 'Zone 19', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
 		state "active", label: 'Zone 19', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
 	}
-<<<<<<< HEAD
-    standardTile("zoneTwenty", "device.zoneTwenty", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
-=======
     	standardTile("zone20", "device.zone20", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
->>>>>>> pr/10
     	{
 		state "inactive", label: 'Zone 20', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
 		state "active", label: 'Zone 20', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
 	}  
-<<<<<<< HEAD
-   	standardTile("zoneTwentyone", "device.zoneTwentyone", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
-	 {
-		state "inactive", label: 'Zone Twentyone', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
-		state "active", label: 'Zone Twentyone', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
-=======
    	standardTile("zone21", "device.zone21", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
     	{
 		state "inactive", label: 'Zone 21', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
 		state "active", label: 'Zone 21', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
->>>>>>> pr/10
 	}
 	standardTile("zone22", "device.zone22", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
     	{
 		state "inactive", label: 'Zone 22', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
         	state "active", label: 'Zone 22', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
    	}
-<<<<<<< HEAD
-	standardTile("zoneTwentythree", "device.Twentythree", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
-	{
-		state "inactive", label: 'Zone Twentythree', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
-		state "active", label: 'Zone Twentythree', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
-=======
 	standardTile("zone23", "device.23", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
     	{
 		state "inactive", label: 'Zone 23', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
 		state "active", label: 'Zone 23', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
->>>>>>> pr/10
 	}
  	standardTile("zone24", "device.zone24", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
     	{
@@ -362,17 +282,10 @@ tiles
 		state "inactive", label: 'Zone 31', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
 		state "active", label: 'Zone 31', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
 	}
-<<<<<<< HEAD
-	standardTile("zoneThirtytwo", "device.zoneThirtytwo", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
-    	{
-		state "inactive", label: 'Zone Thirtytwo', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
-        state "active", label: 'Zone Thirtytwo', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
-=======
 	standardTile("zone32", "device.zone32", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
 	{
 		state "inactive", label: 'Zone 32', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
         	state "active", label: 'Zone 32', icon: "st.security.alarm.alarm", backgroundColor: "#ffa81e"
->>>>>>> pr/10
    	}
 	standardTile("zone33", "device.33", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
     	{
@@ -411,7 +324,7 @@ tiles
 	}
 
 
-//........................................................................................................................................
+//*****************************************************************************************************************************************
 //To customize your device type to the number of zones in your system, simply trim the argument for the <details> command
 //to equal the number of zones. 
 //For example, for 1 zone systems:
@@ -419,348 +332,24 @@ tiles
 //For example, for 4 zones:
 //  	details(["main", "disarm","chime","stay", "away", "panic", "msg", "zone1","zone2", "zone3","zone4", "configAD2Pi"])
 //The maximum number of zones supported by this device type is 36 zones:
-<<<<<<< HEAD
-// 		details(["main", "disarm","chime","stay", "away", "panic", "msg", "zoneOne","zoneTwo", "zoneThree","zoneFour","zoneFive","zoneSix", "zoneSeven", "zoneEight", "zoneNine", "zoneTen","zoneEleven","zoneTwelve","zoneThirteen","zoneFourteen","zoneFifteen","zoneSixteen","zoneSeventeen","zoneEighteen","zoneNineteen","zoneTwenty","zoneTwentyone","zoneTwentytwo","zoneTwentythree","zoneTwentyfour","zoneTwentyfive","zoneTwentysix","zoneTwentyseven","zoneTwentyeight","zoneTwentynine","zoneThirty","zoneThirtyone","zoneThirtytwo","zoneThirtythree","zoneThirtyfour","zoneThirtyfive","zoneThirtysix","zoneThirtyseven","zoneThirtyeight","zoneThirtynine", "configAD2Pi"])
-=======
 // 		details(["main", "disarm","chime","stay", "away", "panic", "msg", "zone1","zone2", "zone3","zone4","zone5","zone6","zone10","zone11","zone12","zone13","zone14","zone15","zone16","zone17","zone18","zone19","zone20","zone21","zone22","zone23","zone24","zone25","zone26","zone27","zone28","zone29","zone30","zone31","zone32","zone33","zone34","zone35","zone36","zone37","zone38","zone39", "configAD2Pi"])
 //
->>>>>>> pr/10
 //
+//Note: Zones 7,8,9, 95,96 are typically reserved for Panic, Duress, Tamper, Panic and Panic, respectively.  No tile is provided for them
+//*****************************************************************************************************************************************
 
 	main(["main"])
-<<<<<<< HEAD
- 	details(["main", "disarm","chime","stay", "away", "panic", "msg", "zoneOne","zoneTwo", "zoneThree","zoneFour","zoneFive","zoneSix", "zoneSeven", "zoneEight", "zoneNine", "zoneTen","zoneEleven","zoneTwelve","zoneThirteen","zoneFourteen","zoneFifteen","zoneSixteen","zoneSeventeen","zoneEighteen","zoneNineteen","zoneTwenty","zoneTwentyone","zoneTwentytwo","zoneTwentythree","zoneTwentyfour","zoneTwentyfive","zoneTwentysix","zoneTwentyseven","zoneTwentyeight","zoneTwentynine","zoneThirty","zoneThirtyone","zoneThirtytwo","zoneThirtythree","zoneThirtyfour","zoneThirtyfive","zoneThirtysix","zoneThirtyseven","zoneThirtyeight","zoneThirtynine", "configAD2Pi"])
- 	
-=======
 	details(["main", "disarm","chime","stay", "away", "panic", "msg", "zone1","zone2", "zone3","zone4","zone5","zone6", "zone10","zone11","zone12","zone13","zone14","zone15","zone16","zone17","zone18","zone19","zone20","zone21","zone22","zone23","zone24","zone25","zone26","zone27","zone28","zone29","zone30","zone31","zone32","zone33","zone34","zone35","zone36","zone37","zone38","zone39", "configAD2Pi"])
->>>>>>> pr/10
 }
-
-//........................................................................................................................................
-
-
-// End customization section
-//*****************************************************************************************************************************************
-//*****************************************************************************************************************************************
-//*****************************************************************************************************************************************
-//*****************************************************************************************************************************************
-
 
 // Parse incoming device messages to generate events
 def parse(String description) {
-  	//log.debug "Parsing: ${description}"
-    def isDebugEnabled = false
+    def isDebugEnabled = true
   	
   	def result = []
     def rawMsg = zigbee.parse(description)?.text
     if (isDebugEnabled) log.debug "rawMsg: ${rawMsg}"
     
-<<<<<<< HEAD
-//	log.debug "Parsing: ${description}"
-
-	def msg = zigbee.parse(description)?.text
-//    log.debug "Alarm Message Is:'${msg}'"
-
-	if (!msg.contains("ping") && msg.trim().length() > 0) {
-		result << createEvent(name: "msg", value: msg)  //display message to message tile
-        log.info "Alarm Message Is:'${msg}'"
-    	
-        if (msg.contains("..."))  {
-			result << createEvent(name: "msg", value: "Having Trouble Sending")  
-    	}
-        
-        // when Disarmed, Ready To Arm is received, set all the Zone tiles to inactive
-        if (msg.contains("DISARMED"))
-    	{
-        	result << createEvent(name: "system", value: "disarmed", displayed: true, isStateChange: true, isPhysical: true)
-            //set "motion" capability to inactive.  This capability can be monitored by smart apps to know if your alarm system alarming
-            result << createEvent(name: "motion", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
-            result << createEvent(name: "zoneOne", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
-        	result << createEvent(name: "zoneTwo", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
-        	result << createEvent(name: "zoneThree", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
-        	result << createEvent(name: "zoneFour", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
-        	result << createEvent(name: "zoneFive", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
-        	result << createEvent(name: "zoneSix", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
-        	result << createEvent(name: "zoneSeven", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
-        	result << createEvent(name: "zoneEight", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
-        	result << createEvent(name: "zoneNine", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
-        	result << createEvent(name: "zoneTen", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
-        	result << createEvent(name: "zoneEleven", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
-        	result << createEvent(name: "zoneTwelve", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
-        	result << createEvent(name: "zoneThirteen", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
-        	result << createEvent(name: "zoneFourteen", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
-        	result << createEvent(name: "zoneFifteen", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
-        	result << createEvent(name: "zoneSixteen", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
-        	result << createEvent(name: "zoneSeventeen", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
-        	result << createEvent(name: "zoneEighteen", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
-        	result << createEvent(name: "zoneNineteen", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
-        	result << createEvent(name: "zoneTwenty", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
-        	result << createEvent(name: "zoneTwentyone", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
-        	result << createEvent(name: "zoneTwentytwo", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
-        	result << createEvent(name: "zoneTwentythree", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
-        	result << createEvent(name: "zoneTwentyfour", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
-        	result << createEvent(name: "zoneTwentyfive", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
-        	result << createEvent(name: "zoneTwentysix", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
-        	result << createEvent(name: "zoneTwentyseven", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
-        	result << createEvent(name: "zoneTwentyeight", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
-        	result << createEvent(name: "zoneTwentynine", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
-        	result << createEvent(name: "zoneThirty", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
-        	result << createEvent(name: "zoneThirtyone", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
-        	result << createEvent(name: "zoneThirtytwo", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
-        	result << createEvent(name: "zoneThirtythree", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
-        	result << createEvent(name: "zoneThirtyfour", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
-        	result << createEvent(name: "zoneThirtyfive", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
-        	result << createEvent(name: "zoneThirtysix", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
-        	result << createEvent(name: "zoneThirtyseven", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
-        	result << createEvent(name: "zoneThirtyeight", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
-        	result << createEvent(name: "zoneThirtynine", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
-    	}   
- 		
-        // manage the CHIME tile
-        if (msg.contains("CHIME"))  {
-        	result << createEvent(name: "chime", value: "chimeOn", displayed: true, isStateChange: true, isPhysical: true)
-    	}
-   		else if (msg.contains("DISARMED"))  { 
-       		result << createEvent(name: "chime", value: "chimeOff", displayed: true, isStateChange: true, isPhysical: true)
-    	}
-    
-    	// manage overall system status
-        if (msg.contains("ALARM"))
-    	{
-    		result << createEvent(name: "system", value: "alarm", displayed: true, isStateChange: true, isPhysical: true)
-            //sets the "motion" capability to active.  This capability can be monitored by smart apps to know if your alarm system alarming
-            result << createEvent(name: "motion", value: "active", descriptionText: "Alarm Panel is Alarming", displayed: true, isStateChange: true, isPhysical: true)
-    	}
-      
-        if (msg.contains("ARMED"))
-    	{
-        	if (msg.contains("STAY"))
-    		{
-        		if (msg.contains("You may exit now"))
-    			{
-            		result << createEvent(name: "system", value: "armingStay", displayed: true)
-        		}	
-        		else
-            	{
-            		result << createEvent(name: "system", value: "armedStay", displayed: true, isStateChange: true, isPhysical: true)
-        		}
-        	}
-        	else if (msg.contains("AWAY"))
-        	{
-        		if (msg.contains("You may exit now"))
-    			{
-            		result << createEvent(name: "system", value: "armingAway", displayed: true, isStateChange: true, isPhysical: true)
-        		}
-        		else
-            	{
-            		result << createEvent(name: "system", value: "armedAway", displayed: true, isStateChange: true, isPhysical: true)
-				}
-        	}
-    	}
-    	
-        //manage the Zone tiles:
-        if (msg.contains("FAULT"))
-    	{
-        	if (msg.contains("01"))
-        	{
-        		log.info "Home Alarm Sensor Fault Zone 01"
-        		result << createEvent(name: "zoneOne", value: "active", displayed: true, isStateChange: true, isPhysical: true)    
-        	}
-        	else if (msg.contains("02"))
-        	{
-        		log.info "Home Alarm Sensor Fault 02"
-        		result << createEvent(name: "zoneTwo", value: "active", displayed: true, isStateChange: true, isPhysical: true)
-        	}
-        	else if (msg.contains("03"))
-        	{
-        		log.info "Home Alarm Sensor Fault 03"
-        		result << createEvent(name: "zoneThree", value: "active", displayed: true, isStateChange: true, isPhysical: true)
-        	}
-        	else if (msg.contains("04"))
-        	{
-        		log.info "Home Alarm Sensor Fault 04"
-        		result << createEvent(name: "zoneFour", value: "active", displayed: true, isStateChange: true, isPhysical: true)
-        	}	
-        	else if (msg.contains("05"))
-        	{
-        		log.info "Home Alarm Sensor Fault 05"
-        		result << createEvent(name: "zoneFive", value: "active", displayed: true, isStateChange: true, isPhysical: true)
-        	}
-        	else if (msg.contains("06"))
-        	{
-        		log.info "Home Alarm Sensor Fault 06"
-        		result << createEvent(name: "zoneSix", value: "active", displayed: true, isStateChange: true, isPhysical: true)
-        	}
-        	else if (msg.contains("07"))
-        	{
-        		log.info "Home Alarm Sensor Fault 07"
-        		result << createEvent(name: "zoneSeven", value: "active", displayed: true, isStateChange: true, isPhysical: true)
-        	}	
-        	else if (msg.contains("08"))
-        	{
-        		log.info "Home Alarm Sensor Fault 08"
-        		result << createEvent(name: "zoneEight", value: "active", displayed: true, isStateChange: true, isPhysical: true)
-        	}
-        	else if (msg.contains("09"))
-        	{
-        		log.info "Home Alarm Sensor Fault 09"
-        		result << createEvent(name: "zoneNine", value: "active", displayed: true, isStateChange: true, isPhysical: true)
-        	}
-        	else if (msg.contains("10"))
-        	{
-        		log.info "Home Alarm Sensor Fault 10"
-        		result << createEvent(name: "zoneTen", value: "active", displayed: true, isStateChange: true, isPhysical: true)
-        	}
-        	else if (msg.contains("11"))
-        	{
-        		log.info "Home Alarm Sensor Fault Zone 11"
-        		result << createEvent(name: "zoneEleven", value: "active", displayed: true, isStateChange: true, isPhysical: true)    
-        	}
-        	else if (msg.contains("12"))
-        	{
-        		log.info "Home Alarm Sensor Fault 12"
-        		result << createEvent(name: "zoneTwelve", value: "active", displayed: true, isStateChange: true, isPhysical: true)
-        	}
-        	else if (msg.contains("13"))
-        	{
-        		log.info "Home Alarm Sensor Fault 13"
-        		result << createEvent(name: "zoneThirteen", value: "active", displayed: true, isStateChange: true, isPhysical: true)
-        	}
-        	else if (msg.contains("14"))
-        	{
-        		log.info "Home Alarm Sensor Fault 14"
-        		result << createEvent(name: "zoneFourteen", value: "active", displayed: true, isStateChange: true, isPhysical: true)
-        	}	
-        	else if (msg.contains("15"))
-        	{
-        		log.info "Home Alarm Sensor Fault 15"
-        		result << createEvent(name: "zoneFifteen", value: "active", displayed: true, isStateChange: true, isPhysical: true)
-        	}
-        	else if (msg.contains("16"))
-        	{
-        		log.info "Home Alarm Sensor Fault 16"
-        		result << createEvent(name: "zoneSixteen", value: "active", displayed: true, isStateChange: true, isPhysical: true)
-        	}
-        	else if (msg.contains("17"))
-        	{
-        		log.info "Home Alarm Sensor Fault 17"
-        		result << createEvent(name: "zoneSeventeen", value: "active", displayed: true, isStateChange: true, isPhysical: true)
-        	}	
-        	else if (msg.contains("18"))
-        	{
-        		log.info "Home Alarm Sensor Fault 18"
-        		result << createEvent(name: "zoneEighteen", value: "active", displayed: true, isStateChange: true, isPhysical: true)
-        	}
-        	else if (msg.contains("19"))
-        	{
-        		log.info "Home Alarm Sensor Fault 19"
-        		result << createEvent(name: "zoneNineteen", value: "active", displayed: true, isStateChange: true, isPhysical: true)
-        	}
-        	else if (msg.contains("20"))
-        	{
-        		log.info "Home Alarm Sensor Fault 20"
-        		result << createEvent(name: "zoneTwenty", value: "active", displayed: true, isStateChange: true, isPhysical: true)
-        	}
-        	else if (msg.contains("21"))
-        	{
-        		log.info "Home Alarm Sensor Fault Zone 21"
-        		result << createEvent(name: "zoneTwentyone", value: "active", displayed: true, isStateChange: true, isPhysical: true)    
-        	}
-        	else if (msg.contains("22"))
-        	{
-        		log.info "Home Alarm Sensor Fault 22"
-        		result << createEvent(name: "zoneTwentytwo", value: "active", displayed: true, isStateChange: true, isPhysical: true)
-        	}
-        	else if (msg.contains("23"))
-        	{
-        		log.info "Home Alarm Sensor Fault 23"
-        		result << createEvent(name: "zoneTwentythree", value: "active", displayed: true, isStateChange: true, isPhysical: true)
-        	}
-        	else if (msg.contains("24"))
-        	{
-        		log.info "Home Alarm Sensor Fault 24"
-        		result << createEvent(name: "zoneTwentyfour", value: "active", displayed: true, isStateChange: true, isPhysical: true)
-        	}	
-        	else if (msg.contains("25"))
-        	{
-        		log.info "Home Alarm Sensor Fault 25"
-        		result << createEvent(name: "zoneTwentyfive", value: "active", displayed: true, isStateChange: true, isPhysical: true)
-        	}
-        	else if (msg.contains("26"))
-        	{
-        		log.info "Home Alarm Sensor Fault 26"
-        		result << createEvent(name: "zoneTwentysix", value: "active", displayed: true, isStateChange: true, isPhysical: true)
-        	}
-        	else if (msg.contains("27"))
-        	{
-        		log.info "Home Alarm Sensor Fault 27"
-        		result << createEvent(name: "zoneTwentyseven", value: "active", displayed: true, isStateChange: true, isPhysical: true)
-        	}	
-        	else if (msg.contains("28"))
-        	{
-        		log.info "Home Alarm Sensor Fault 28"
-        		result << createEvent(name: "zoneTwentyeight", value: "active", displayed: true, isStateChange: true, isPhysical: true)
-        	}
-        	else if (msg.contains("29"))
-        	{
-        		log.info "Home Alarm Sensor Fault 29"
-        		result << createEvent(name: "zoneTwentynine", value: "active", displayed: true, isStateChange: true, isPhysical: true)
-        	}
-        	else if (msg.contains("30"))
-        	{
-        		log.info "Home Alarm Sensor Fault 30"
-        		result << createEvent(name: "zoneThirty", value: "active", displayed: true, isStateChange: true, isPhysical: true)
-        	}
-        	else if (msg.contains("21"))
-        	{
-        		log.info "Home Alarm Sensor Fault Zone 31"
-        		result << createEvent(name: "zoneThirtyone", value: "active", displayed: true, isStateChange: true, isPhysical: true)    
-        	}
-        	else if (msg.contains("22"))
-        	{
-        		log.info "Home Alarm Sensor Fault 32"
-        		result << createEvent(name: "zoneThirtytwo", value: "active", displayed: true, isStateChange: true, isPhysical: true)
-        	}
-        	else if (msg.contains("33"))
-        	{
-        		log.info "Home Alarm Sensor Fault 33"
-        		result << createEvent(name: "zoneThirtythree", value: "active", displayed: true, isStateChange: true, isPhysical: true)
-        	}
-        	else if (msg.contains("34"))
-        	{
-        		log.info "Home Alarm Sensor Fault 34"
-        		result << createEvent(name: "zoneThirtyfour", value: "active", displayed: true, isStateChange: true, isPhysical: true)
-        	}	
-        	else if (msg.contains("35"))
-        	{
-        		log.info "Home Alarm Sensor Fault 35"
-        		result << createEvent(name: "zoneThirtyfive", value: "active", displayed: true, isStateChange: true, isPhysical: true)
-        	}
-        	else if (msg.contains("36"))
-        	{
-        		log.info "Home Alarm Sensor Fault 36"
-        		result << createEvent(name: "zoneThirtysix", value: "active", displayed: true, isStateChange: true, isPhysical: true)
-        	}
-        	else if (msg.contains("37"))
-        	{
-        		log.info "Home Alarm Sensor Fault 37"
-        		result << createEvent(name: "zoneThirtyseven", value: "active", displayed: true, isStateChange: true, isPhysical: true)
-        	}	
-        	else if (msg.contains("38"))
-        	{
-        		log.info "Home Alarm Sensor Fault 38"
-        		result << createEvent(name: "zoneThirtyeight", value: "active", displayed: true, isStateChange: true, isPhysical: true)
-        	}
-        	else if (msg.contains("39"))
-        	{
-        		log.info "Home Alarm Sensor Fault 39"
-        		result << createEvent(name: "zoneThirtynine", value: "active", displayed: true, isStateChange: true, isPhysical: true)
-        	}
-    	}
-//		log.debug "${result?.descriptionText}"
-		return result
-	}
-=======
     if (rawMsg.contains("ping") || rawMsg.equals("") || rawMsg == null) {
     	// Do Nothing
     } else if (rawMsg.contains("...."))  {
@@ -832,7 +421,6 @@ def parse(String description) {
 	result << createEvent(name: "msg", value: rawMsg)
     }
     return result
->>>>>>> pr/10
 }
 
 // Commands sent to the device
@@ -862,7 +450,7 @@ def armAway()
 def disarm() 
 {
 	sendEvent(name: "panic", value: "disarmed", displayed: true, isStateChange: true, isPhysical: true)
-    	zigbee.smartShield(text: "[CODE]"+ securityCode + "1***").format()
+    zigbee.smartShield(text: "[CODE]"+ securityCode + "1***").format()
 }
 
 def armStay() 
@@ -873,8 +461,8 @@ def armStay()
 
 def siren()
 {
-    	log.debug "sent panic"
-    	zigbee.smartShield(text: "[FUNC]"+ panicKey).format()
+    log.debug "sent panic"
+    zigbee.smartShield(text: "[FUNC]"+ panicKey).format()
 }
 
 def chime() 
@@ -884,29 +472,23 @@ def chime()
 }
 
 def config()
-// pressing the "Config" tile on the AD2Pi will normally request the alarm panel to report out its Configurtion into the message tile.
-// If a Configuration Command was provided as input into the Preferences, this method will send the command down to the Arduino
-// which will write to the eeprom of the AD2Pi 
+	// pressing the "Config" tile on the AD2Pi will normally request the alarm panel to report out its Configurtion into the message tile.
+    // If a Configuration Command was provided as input into the Preferences, this method will send the command down to the Arduino
+    // which will write to the eeprom of the AD2Pi 
 {
-<<<<<<< HEAD
-    	log.debug "sending AD2Pi Config Command: ${configCommand}"
-    	zigbee.smartShield(text: "[CONF]${configCommand}").format()
-//  TODO: reset the configCommand value to null
-=======
     log.debug "sending AD2Pi Config Command: ${configCommand}"
     zigbee.smartShield(text: "[CONF]${configCommand}").format()
->>>>>>> pr/10
 }
 
 def pressPanicOnce() 
 {
-  	sendEvent(name: "panic", value: "pressedOnce", displayed: true, isStateChange: true, isPhysical: true)
-  	log.debug "pressed panic key once"
+  sendEvent(name: "panic", value: "pressedOnce", displayed: true, isStateChange: true, isPhysical: true)
+  log.debug "pressed panic key once"
 }
 
 
 def pressPanicTwice() 
 {
-  	sendEvent(name: "panic", value: "pressedTwice", displayed: true, isStateChange: true, isPhysical: true)
-  	log.debug "pressed panic key twice"
+  sendEvent(name: "panic", value: "pressedTwice", displayed: true, isStateChange: true, isPhysical: true)
+  log.debug "pressed panic key twice"
 }
