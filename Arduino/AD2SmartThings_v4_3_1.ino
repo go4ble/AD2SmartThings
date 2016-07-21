@@ -1,11 +1,11 @@
  
 /** 
- * AD2SmartThings v4_3
+ * AD2SmartThings v4_3_1
  * Couple your Ademco/Honeywell Alarm to your SmartThings Graph using an AD2PI, an Arduino and a ThingShield
  * The Arduino passes all your alarm messages to your SmartThings Graph where they can be processed by the Device Type
  * Use the Device Type to control your alarm or use SmartApps to integrate with other events in your home graph
  *
- *
+ * Authors Stan Dotson and Michael Ritchie
  ****************************************************************************************************************************
  * Libraries:
  * ArduinoJson library was created by Benoit Blanchon  https://github.com/bblanchon/ArduinoJson/releases.
@@ -45,7 +45,6 @@
 
 
 #include <SoftwareSerial.h>
-#include <ArduinoJson.h>
 #include <SmartThings.h>  //be sure you are using the library from ST_ANYTHING which has support for hardware serial on the Arduino Mega
 
 #define PIN_LED       13
