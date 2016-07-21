@@ -40,7 +40,7 @@ preferences {
 
 
 metadata {
-	definition (name: "AD2SmartThings v4.2", version: "4.2",author: "stan@dotson.info") 
+	definition (name: "AD2SmartThings v4.3", version: "4.3",author: "Stan Dotson and Michael Ritchie") 
     	{
 
 	capability "Switch"  // <on> will arm alarm in "stay" mode; same as armStay
@@ -76,8 +76,8 @@ tiles {
 		state "disarmed", label:"Disarmed", action:"disarm", icon:"st.Home.home2", backgroundColor:"#ffffff"
 		state "armedAway", label:"Armed Away", action:"disarm", icon:"st.Home.home3", backgroundColor:"#587498"
 		state "armedStay", label:"Armed Stay", action:"disarm", icon:"st.Home.home4", backgroundColor:"#587498"
-        	state "alarm", label:"Alarm!", action:"disarm", icon:"st.Home.home3", backgroundColor:"#E86850"
-        	state "armingAway", label:"Arming Away", action:"disarm", icon:"st.Home.home3", backgroundColor:"#FFD800"
+        state "alarm", label:"Alarm!", action:"disarm", icon:"st.Home.home3", backgroundColor:"#E86850"
+        state "armingAway", label:"Arming Away", action:"disarm", icon:"st.Home.home3", backgroundColor:"#FFD800"
 		state "armingStay", label:"Arming Stay", action:"disarm", icon:"st.Home.home4", backgroundColor:"#FFD800"
 	}
  	standardTile("stay", "device.system", width: 1, height: 1, decoration: "flat")
@@ -349,6 +349,13 @@ def parse(String description) {
   	def result = []
     def rawMsg = zigbee.parse(description)?.text
     if (isDebugEnabled) log.debug "rawMsg: ${rawMsg}"
+    if (isDebugEnabled) {
+    	def zoneStatusList = "Current Zone Status:"
+    	for (int i = 1; i < 11; i++) {  //TODO: change to 40
+        	zoneStatusList = zoneStatusList + device.currentValue("zone${i}").toString() + ","
+    	}
+    	log.debug zoneStatusList
+    }
     
     if (rawMsg.contains("ping") || rawMsg.equals("") || rawMsg == null) {
     	// Do Nothing
@@ -394,8 +401,18 @@ def parse(String description) {
         
         if (activeZone.equals("") || activeZone == null) {
             // Do Nothing
+        } else if(activeZone == "none") {
+            //clear all active zones
+            if (isDebugEnabled) log.debug "Received all clear for zones; setting all active zones to inactive"
+          	for (int i = 1; i < 40; i++) {  //ToDo: cleaner to create global variable with total zone number and have users edit if they trim zone list (above)
+                def currentVal = device.currentValue("zone${i}")
+                if (currentVal.equals("active")) {
+                    sendEvent(name: "zone${i}", value: "inactive", descriptionText: "Zone Update", displayed: true, isStateChange: true, isPhysical: true)
+                	if (isDebugEnabled) log.debug "All Clear created inactive event for zone${i}"
+          		}
+         	}                   
         } else {
-            result << createEvent(name: "zone${activeZone.trim()}", value: "active", descriptionText: alarmMsg, displayed: true, isStateChange: true, isPhysical: true)
+            sendEvent(name: "zone${activeZone.trim()}", value: "active", descriptionText: "Zone Update", displayed: true, isStateChange: true, isPhysical: true)
             if (isDebugEnabled) log.debug "Created active event for zone${activeZone.trim()}"
         }
         
@@ -404,13 +421,13 @@ def parse(String description) {
         } else {
             def inactiveArray = inactiveList.toString().split(",");
             for (int i = 0; i < inactiveArray.size(); i++) {
-                result << createEvent(name: "zone${inactiveArray[i].trim()}", value: "inactive", descriptionText: alarmMsg, displayed: true, isStateChange: true, isPhysical: true)
+                sendEvent(name: "zone${inactiveArray[i].trim()}", value: "inactive", descriptionText: "Zone Update", displayed: true, isStateChange: true, isPhysical: true)
                 if (isDebugEnabled) log.debug "Created inactive event for zone${inactiveArray[i].trim()}"
             }
         }
         
         if (keypadMsg != "" && keypadMsg != null) {
-	    result << createEvent(name: "msg", value: keypadMsg)  //display message to message tile
+	    sendEvent(name: "msg", value: keypadMsg, displayed: true, isStateChange: true,)  //display message to message tile
             if (keypadMsg == "Alarm not ready cannot arm") {
                 if (isDebugEnabled) log.debug "alertMsg: ${keypadMsg}"
             	result << createEvent(name: "alertMsg", value: keypadMsg)
