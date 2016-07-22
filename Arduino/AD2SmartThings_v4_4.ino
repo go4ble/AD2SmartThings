@@ -1,14 +1,13 @@
  
 /** 
- * AD2SmartThings v4_3_1
+ * AD2SmartThings v4_4
  * Couple your Ademco/Honeywell Alarm to your SmartThings Graph using an AD2PI, an Arduino and a ThingShield
  * The Arduino passes all your alarm messages to your SmartThings Graph where they can be processed by the Device Type
  * Use the Device Type to control your alarm or use SmartApps to integrate with other events in your home graph
  *
- * Authors Stan Dotson and Michael Ritchie
+ *
  ****************************************************************************************************************************
  * Libraries:
- * ArduinoJson library was created by Benoit Blanchon  https://github.com/bblanchon/ArduinoJson/releases.
  * 
  * An enhanced SmartThings Library was created by  Dan G Ogorchock & Daniel J Ogorchock and their version is required for this implementation.
  * Their enhanced library can found at:
@@ -57,11 +56,6 @@ SmartThings smartthing(HW_SERIAL3, messageCallout);  //constructor for hardware 
 // set global variables
 char buffer[BUFFER_SIZE];  //stores characters in AD2Pi to build up a message
 boolean isDebugEnabled=true;  //set to true to debug
-//For debugging purposes you can turn on different levels of logging:
-//1 (Low Verbosity) - Zone and Command messages that are sent to SmartThings
-//2 (Medium Verbosity) - Low Verbosity messages, AD2PI configuration from SmartThings, print out of all zone status after each fault
-//3 (High Verbosity) - Low and Medium Verbosity messages, raw data messages from AD2PI
-int debugVerbosity=0; 
 int bufferIdx;  //counts characters as they come in from AD2Pi
 String previousStr;
 String previousPowerStatus;
@@ -126,10 +120,7 @@ void processAD2() {
     buffer[bufferIdx] = '\0'; //adds null at end of buffer
     bufferIdx = 0; // reset  counter for next message
     String str(buffer);
-    if (isDebugEnabled) {
-       Serial.println (str);
-    }
-  
+    serialLog (str);
     //handle AD2Pi messages
   
    //first, check to see if  message is disarmed system status repeating over and over
@@ -137,6 +128,8 @@ void processAD2() {
       // do nothing to avoid excessive logging to SmartThings hub and quickly return to loop
       return;
     }
+    
+    
     //message is different than previous message
     previousStr=str;
       
@@ -148,17 +141,28 @@ void processAD2() {
       return;
     } 
 
+
+  //Build and forward a message to the device handler in SmartThings. Only send information that represents an new status
+
+    String sendData; // alarm panel combined status
+    String sendMessage; //alarm panel stats + keypad message
+
+
   //AD2Pi messages that should be passed to device handler to display but no action required
 
     if (str.indexOf("!CONFIG") >= 0) {
-      String sendMessage = ("|||||" + str.substring(8,18) + "|");
+      String sendMessage = ("|||||" + str.substring(8,18));
       smartthing.send(sendMessage);
       delay (3000);
+      previousSendData = "";  //trip process to send subsequent message to smartthings
+      previousAlarmStatus = "";
       return;
     } 
     if (str.indexOf("!Sending") >= 0) {
-      String sendMessage = ("|||||" + str + "|");
+      String sendMessage = ("|||||"+ str);
       smartthing.send(sendMessage);
+      previousSendData = "";  //trip process to send subsequent message to smartthings
+      previousAlarmStatus = "";
       return;
     } 
 
@@ -196,7 +200,12 @@ void processAD2() {
  * 20  Unused
 */
 
+
+/** 
   //Unpack AD2Pi messages, evaluate if they represent changes to alarm panel and forward only those messages that represent status changes
+  //Build message to send to device handler as follows
+  //  powerStatus|chimeStatus|alarmStatus|activeZone|inactiveList|keypadMsg
+*/
 
     String rawPanelCode = getValue(str, ',', 0);
     //During exit now messages sometimes an extra [ appears at the beginning of the rawPanelCode, remove it if found
@@ -268,8 +277,8 @@ void processAD2() {
       //ToDo: is this true with device faults, such as wireless sensors with low battery, etc.. ?
       //ToDo: is this true when zone bypass has been enabled?
       //ToDo: may need to replace using the "1" at bit postions 2,3 or 4 with the keypadMsg of "disarmed", "armed", "arming" if the above creates issues
-      activeZone = "none";  //when processed by device handler, will reset all zones
-      resetZoneStatusList();
+      inactiveList = "allClear";  //when processed by device handler, will reset all zones
+      getActiveList(1, numZones+1);
 
      
      //detect new faults 
@@ -280,10 +289,7 @@ void processAD2() {
           zoneStatusList[0] = zoneStatusList[0] + 1;
           //Send only 1 new fault since others were previously sent
           activeZone = String(zoneNumber);
-          if (isDebugEnabled) {
-            Serial.print("New fault detected: ");
-            Serial.println(activeZone);
-          }
+          serialLog("New fault detected: " + activeZone);
           previousStr=""; //need to run through logic a second time to clear the zoneList
      
 
@@ -292,14 +298,11 @@ void processAD2() {
   
        } else if (zoneNumber == lastZone && zoneStatusList[0] == 1) {
             //Do nothing: Only 1 fault repeating
-           if(isDebugEnabled) {
-             Serial.println("Single fault repeating: zoneNumber(" + String(zoneNumber) + ") == lastZone(" + String(lastZone) + ")");
-           }
+             serialLog("Single fault repeating: zoneNumber(" + String(zoneNumber) + ") == lastZone(" + String(lastZone) + ")");
 
          //evaluate three cases where two or more zones are active  
        } else if (zoneNumber == lastZone && zoneStatusList[0] > 1) {
             //Faults(s) dropped from list.  Gather a list of those zones and mark inactive.
-            Serial.println("A");
             inactiveList = getActiveList(1, numZones + 1);
             //Since we don't know what zone, remove current zone and set back to active in zoneStatusList array and update counter
             //the dropped zones would be all zones from lastZone to zoneNumber.  Insert sub-routine to zero those zones out.
@@ -307,10 +310,8 @@ void processAD2() {
             inactiveList.replace(String(zoneNumber) + ",", "");
             zoneStatusList[zoneNumber] = 1;
             zoneStatusList[0] = zoneStatusList[0] + 1;
-            if(isDebugEnabled) {
-              Serial.println ("zoneNumber(" + String(zoneNumber) + ") == lastZone(" + String(lastZone) + "): Faults Dropped from list and marked inactive: " + String(inactiveList));
-            }
-            previousStr=""; //need to run through logic a second time to clear the zoneList
+            serialLog ("zoneNumber(" + String(zoneNumber) + ") == lastZone(" + String(lastZone) + "): Faults Dropped from list and marked inactive: " + String(inactiveList));
+            previousStr=""; //logic requires two run throughs to complete proper update of zoneStatusList
          
        } else if (zoneNumber < lastZone) {
             //Fault list starting over, determine if any faults dropped from list between zone 1 and current zone and also between the lastZone and numZones
@@ -319,27 +320,21 @@ void processAD2() {
             if (zoneNumber == 1) {
               inactiveList = inactiveList + getActiveList(lastZone+1, numZones+1);
             }
-            if(isDebugEnabled) {
-              Serial.println ("zoneNumber(" + String(zoneNumber) + ") < lastZone(" + String(lastZone) + "): Faults Dropped from list and marked inactive: " + String(inactiveList));
-            }  
+            serialLog ("zoneNumber(" + String(zoneNumber) + ") < lastZone(" + String(lastZone) + "): Faults Dropped from list and marked inactive: " + String(inactiveList));
+           
             lastZone = zoneNumber;
-            previousStr=""; //need to run through logic a second time to clear the zoneList
+            previousStr=""; //logic requires two run throughs to complete proper update of zoneStatusList
 
       } else if (zoneNumber > lastZone) {
             //Fault list progressing, determine if any faults dropped from list between previous and current zone
             inactiveList = getActiveList(lastZone + 1, zoneNumber);
-              if(isDebugEnabled) {
-                Serial.println("zoneNumber(" + String(zoneNumber) + ") > lastZone(" + String(lastZone) + "): Faults Dropped from list and marked inactive: " + String(inactiveList));
-              }
-            previousStr=""; //need to run through logic a second time to clear the zoneList
+            serialLog("zoneNumber(" + String(zoneNumber) + ") > lastZone(" + String(lastZone) + "): Faults Dropped from list and marked inactive: " + String(inactiveList));        
+            previousStr=""; //logic requires two run throughs to complete proper update of zoneStatusList
             lastZone = zoneNumber;
       }
        
     
-  //Now build the message to send to SmartThings device handler.  Only send information that represents an new status
-
-    String sendData; // alarm panel combined status
-    String sendMessage; //alarm panel stats + keypad message
+//build the message to send to the device handler on the hub
    
     if (powerStatus == previousPowerStatus) {
       sendMessage = "|";
@@ -383,10 +378,7 @@ void processAD2() {
         //Last new keypad message remains displayed in message tile on smartphone.  ToDo: should we design custom message???
       } else {
         //now send an alarm panel update to SmartThings
-        if (isDebugEnabled) {
-          Serial.print("Sent to SmartThings:");
-          Serial.println (sendMessage);
-        }
+        Serial.println ("Sent to SmartThings:" + sendMessage);
         smartthing.send(sendMessage);   
       }
       previousSendData = sendData;
@@ -401,8 +393,10 @@ void messageCallout(String message) {
     if (code.equals("[CODE]")) {
     //Check to see if arming away and if alarm is ready, if not send notification that alarm cannot be armed.
     //This won't work for arming stay since motions could be active that don't affect arm stay.
-    if (cmd == "2" && zoneStatusList[0] > 0) {
-      smartthing.send(String("||disarmed|Alarm not ready cannot arm|||"));
+    Serial.println(cmd + "is command");
+    if (cmd.endsWith("2") && zoneStatusList[0] > 0) {
+      smartthing.send(String("||disarmed|||Alarm not ready; cannot arm"));\
+      Serial.println( "sent cannot arm to smartthigns");
     } else {
       String sendCommand = cmd;
       Serial1.println(sendCommand);  //send AD2Pi the command to pass on to Alarm Panel
@@ -411,9 +405,7 @@ void messageCallout(String message) {
     }
     if (code.equals("[CONF]")) {
       Serial1.println("C" + cmd);  //send configuration command to AD2Pi
-      if (isDebugEnabled && debugVerbosity >= 2) {
-        Serial.println("Sent AD2Pi: C" + cmd);
-      }
+      serialLog("Sent AD2Pi: C" + cmd);
     }
     else if (code.equals("[FUNC]")) {
 //      serialLog("Sending AD2Pi ASCII:" + cmd, 2);
@@ -452,11 +444,7 @@ String getValue(String data, char separator, int index) {
 }
 
 String getActiveList(int start, int end) {
-  String faultList;
-  if (isDebugEnabled) {
-    Serial.println ("running getActiveList");  
-    printArray(zoneStatusList, numZones + 1);
-  }
+  String faultList; 
   for (int i = start; i < end; ++i) {
     if (zoneStatusList[i] == 1) { 
       faultList = faultList + String(i) + ",";
@@ -500,5 +488,11 @@ void resetZoneStatusList() {
   }
   if (isDebugEnabled) {
     printArray(zoneStatusList, numZones+1);
+  }
+}
+
+void serialLog(String serialMsg) {  
+  if (isDebugEnabled) {
+    Serial.println(serialMsg);
   }
 }
