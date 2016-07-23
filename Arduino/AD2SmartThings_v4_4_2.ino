@@ -1,5 +1,5 @@
 /** 
- * AD2SmartThings v4_4.1
+ * AD2SmartThings v4_4_2
  * Couple your Ademco/Honeywell Alarm to your SmartThings Graph using an AD2PI, an Arduino and a ThingShield
  * The Arduino passes all your alarm messages to your SmartThings Graph where they can be processed by the Device Type
  * Use the Device Type to control your alarm or use SmartApps to integrate with other events in your home graph
@@ -81,7 +81,7 @@ int zoneStatusList[numZones + 1]; //stores each zone's status.  Adding 1 to numZ
 
 void setup() {
   // initialize AD2 serial stream
-  Serial1.begin(115200);                
+  Serial1.begin(115200 );           
   bufferIdx = 0;
 
   //debug stuff
@@ -134,7 +134,7 @@ void processAD2() {
   //handle AD2Pi messages
 
  //first, check to see if  message is disarmed system status repeating over and over
-  if (str.equals(previousStr))  {   //&& previousStr.indexOf("DISARMED")>=0
+  if (str.equals(previousStr))  {   
     // do nothing to avoid excessive logging to SmartThings hub and quickly return to loop
     return;
   }
@@ -359,16 +359,19 @@ void processAD2() {
     sendMessage = sendMessage + String(inactiveList) + "|";
     previousInactiveList = inactiveList;
   }
+
   sendData = sendMessage;
   sendMessage = sendMessage + keypadMsg;
+  Serial.println(sendMessage);
+  Serial.println(sendData);
  
   // Messages longer than 63 characters sometimes do not send to SmartThings.  Check length and truncate message if longer than 63 characters.
   if (sendMessage.length() > 63) {
     sendMessage.remove(63);  
   }      
-  if (sendMessage.indexOf("|||||") >= 0 || sendData == previousSendData) {  
+  if (sendMessage.startsWith("|||||") || sendData == previousSendData) {  
     //prevents sending multiple rotating faults with different keypad messages from flooding smartthings hub.  
-    //Last new keypad message remains displayed in message tile on smartphone.  ToDo: should we design custom message???
+    //Last new keypad message remains displayed in message tile on smartphone.  
   } else {
     //now send an alarm panel update to SmartThings
     serialLog("Sent to SmartThings:" + sendMessage);
