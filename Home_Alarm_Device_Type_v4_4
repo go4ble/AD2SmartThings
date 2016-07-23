@@ -40,7 +40,7 @@ preferences {
 
 
 metadata {
-	definition (name: "AD2SmartThings v4.4", version: "4.4",author: "stan@dotson.info") 
+	definition (name: "AD2SmartThings v4.4.1", version: "4.4.1",author: "stan@dotson.info") 
     	{
 
 	capability "Switch"  // <on> will arm alarm in "stay" mode; same as armStay
@@ -324,19 +324,21 @@ tiles {
 	}
 
 
-//*****************************************************************************************************************************************
-//To customize your device type to the number of zones in your system, simply trim the argument for the <details> command
-//to equal the number of zones. 
-//For example, for 1 zone systems:
-//  	details(["main", "disarm","chime","stay", "away", "panic", "msg", "zone1", "configAD2Pi"])
-//For example, for 4 zones:
-//  	details(["main", "disarm","chime","stay", "away", "panic", "msg", "zone1","zone2", "zone3","zone4", "configAD2Pi"])
-//The maximum number of zones supported by this device type is 36 zones:
-// 		details(["main", "disarm","chime","stay", "away", "panic", "msg", "zone1","zone2", "zone3","zone4","zone5","zone6","zone10","zone11","zone12","zone13","zone14","zone15","zone16","zone17","zone18","zone19","zone20","zone21","zone22","zone23","zone24","zone25","zone26","zone27","zone28","zone29","zone30","zone31","zone32","zone33","zone34","zone35","zone36","zone37","zone38","zone39", "configAD2Pi"])
-//
-//
-//Note: Zones 7,8,9, 95,96 are typically reserved for Panic, Duress, Tamper, Panic and Panic, respectively.  No tile is provided for them
-//*****************************************************************************************************************************************
+/******************************************************************************************************************************************
+  To customize your device type to the number of zones in your system, simply trim the argument for the <details> command
+  to equal the number of zones. 
+  For example, for 1 zone systems:
+    	details(["main", "disarm","chime","stay", "away", "panic", "msg", "zone1", "configAD2Pi"])
+  For example, for 4 zones:
+    	details(["main", "disarm","chime","stay", "away", "panic", "msg", "zone1","zone2", "zone3","zone4", "configAD2Pi"])
+  The maximum number of zones supported by this device type is 36 zones:
+   		details(["main", "disarm","chime","stay", "away", "panic", "msg", "zone1","zone2", "zone3","zone4","zone5","zone6","zone10","zone11","zone12","zone13","zone14","zone15","zone16","zone17","zone18","zone19","zone20","zone21","zone22","zone23","zone24","zone25","zone26","zone27","zone28","zone29","zone30","zone31","zone32","zone33","zone34","zone35","zone36","zone37","zone38","zone39", "configAD2Pi"])
+  
+  
+  Note: Zones 7,8,9, 95,96 are typically reserved for Panic, Duress, Tamper, Panic and Panic, respectively.  No tile is provided for them
+  Zones do not have to display in order of zone number.  Feel free to reorder zones to your liking.  For example:
+  	details(["main", "disarm","chime","stay", "away", "panic", "msg", "zone4","zone2", "zone3","zone1", "configAD2Pi"])
+******************************************************************************************************************************************/
 
 	main(["main"])
 	details(["main", "disarm","chime","stay", "away", "panic", "msg", "zone1","zone2", "zone3","zone4","zone5","zone6", "zone10","zone11","zone12","zone13","zone14","zone15","zone16","zone17","zone18","zone19","zone20","zone21","zone22","zone23","zone24","zone25","zone26","zone27","zone28","zone29","zone30","zone31","zone32","zone33","zone34","zone35","zone36","zone37","zone38","zone39", "configAD2Pi"])
@@ -352,6 +354,7 @@ def parse(String description) {
     
     if (rawMsg.contains("ping") || rawMsg.equals("") || rawMsg == null) {
     	// Do Nothing
+    
     } else if (rawMsg.contains("...."))  {
 		result << createEvent(name: "msg", value: "Having Trouble Sending")   
     } else if (rawMsg.contains("|")) {        
@@ -398,22 +401,23 @@ def parse(String description) {
         }
         
         //process inActiveList
-        if (inactiveList.toString() == "allClear") {
-            log.debug ("inactiveList is allClear")
-            inactiveList = ""
-            for (int z = 1; z < 40; z++) {
-                if (device.currentValue("zone${z}") == "active") {
-                	inactiveList = inactiveList + z + ","
-               	}
-            }
-        }
         if (inactiveList.equals("") || inactiveList == null) {
             // Do Nothing
         } else {
+            if (isDebugEnabled) log.debug "inactiveList before: ${inactiveList}"
+            if (inactiveList.toString().indexOf("allClear") > -1) {
+                def numZones  = inactiveList.substring(inactiveList.indexOf(":") + 1).toInteger()
+                inactiveList = ""
+                for (int i = 1; i <= numZones; i++) {
+					inactiveList = inactiveList + i + ","
+            	}
+            }
             def inactiveArray = inactiveList.toString().split(",");     
             for (int i = 0; i < inactiveArray.size(); i++) {
-                result << createEvent(name: "zone${inactiveArray[i].trim()}", value: "inactive", descriptionText: alarmMsg, displayed: true, isStateChange: true, isPhysical: true)
-                if (isDebugEnabled) log.debug "Created inactive event for zone${inactiveArray[i].trim()}"
+                if (device.currentValue("zone${inactiveArray[i].trim()}") == "active") {
+                	result << createEvent(name: "zone${inactiveArray[i].trim()}", value: "inactive", descriptionText: alarmMsg, displayed: true, isStateChange: true, isPhysical: true)
+                	if (isDebugEnabled) log.debug "Created inactive event for zone${inactiveArray[i].trim()}"
+                }
             }
         }
         
@@ -426,79 +430,76 @@ def parse(String description) {
             if (isDebugEnabled) log.debug "keypadMsg: ${keypadMsg}"
         }
     } else {
-	result << createEvent(name: "msg", value: rawMsg, displayed: false)
+		result << createEvent(name: "msg", value: rawMsg, displayed: false)
     }
     return result
 }
 
 // Commands sent to the device
-def on() //use to turn on alarm while home
-{  
+def on() { //use to turn on alarm while home
 	armStay()
 }
-def off() 
-{
+
+def off() {
 	disarm()
 }
 
-def lock()//use to turn on alarm in away mode
-{
+def lock() { //use to turn on alarm in away mode
 	armAway()
 }
 
-def unlock()
-{
+def unlock() {
 	disarm()
 }
 
-def armAway()
-{
-	zigbee.smartShield(text: "[CODE]"+ securityCode + "2").format()    
+def armAway() {
+    //0:msgType, 1:msgSecurityCode, 2:msgCmd
+    def securityCodeVal = (securityCode) ? securityCode : ""
+    zigbee.smartShield(text: "[CODE]|"+ securityCodeVal + "|2").format()   
 }
-def disarm() 
-{
-    sendEvent(name: "system", value: "disarmed", displayed: true, isStateChange: true, isPhysical: true)
+
+def disarm() {
+	sendEvent(name: "system", value: "disarmed", displayed: true, isStateChange: true, isPhysical: true)
     sendEvent(name: "panic", value: "disarmed", displayed: false, isStateChange: true, isPhysical: true)
-    zigbee.smartShield(text: "[CODE]"+ securityCode + "1***").format()
+    //0:msgType, 1:msgSecurityCode, 2:msgCmd
+    def securityCodeVal = (securityCode) ? securityCode : ""
+    zigbee.smartShield(text: "CODE|"+ securityCodeVal + "|1***").format()
 }
 
-def armStay() 
-{
-	zigbee.smartShield(text: "[CODE]" + securityCode + "3").format()
+def armStay() {
+    //0:msgType, 1:msgSecurityCode, 2:msgCmd
+    def securityCodeVal = (securityCode) ? securityCode : ""
+    zigbee.smartShield(text: "CODE|" + securityCodeVal + "|3").format()
 }
 
-
-def siren()
-{
-    log.debug "sent panic"
-    zigbee.smartShield(text: "[FUNC]"+ panicKey).format()
+def siren() {
+    //log.debug "sent panic"
+    //0:msgType, 1:msgSecurityCode, 2:msgCmd
+    zigbee.smartShield(text: "FUNC||" + panicKey).format()
 }
 
-def chime() 
-{
-
-	zigbee.smartShield(text: "[CODE]" + securityCode + "9").format()
+def chime() {
+    //0:msgType, 1:msgSecurityCode, 2:msgCmd
+    def securityCodeVal = (securityCode) ? securityCode : ""
+    zigbee.smartShield(text: "CODE|" + securityCodeVal + "|9").format()
 }
 
-def config()
+def config() {
 	// pressing the "Config" tile on the AD2Pi will normally request the alarm panel to report out its Configurtion into the message tile.
     // If a Configuration Command was provided as input into the Preferences, this method will send the command down to the Arduino
     // which will write to the eeprom of the AD2Pi 
-{
+
     log.debug "sending AD2Pi Config Command: ${configCommand}"
-    zigbee.smartShield(text: "[CONF]${configCommand}").format()
+    //0:msgType, 1:msgSecurityCode, 2:msgCmd
+    zigbee.smartShield(text: "CONF||${configCommand}").format()
 }
 
-def pressPanicOnce() 
-{
-  sendEvent(name: "panic", value: "pressedOnce", displayed: true, isStateChange: true, isPhysical: true)
-  log.debug "pressed panic key once"
+def pressPanicOnce() {
+    log.debug "pressed panic key once"
+    sendEvent(name: "panic", value: "pressedOnce", displayed: true, isStateChange: true, isPhysical: true)
 }
 
-
-def pressPanicTwice() 
-{
-  sendEvent(name: "panic", value: "pressedTwice", displayed: true, isStateChange: true, isPhysical: true)
-  log.debug "pressed panic key twice"
+def pressPanicTwice() {
+    log.debug "pressed panic key twice"
+    sendEvent(name: "panic", value: "pressedTwice", displayed: true, isStateChange: true, isPhysical: true)
 }
-
