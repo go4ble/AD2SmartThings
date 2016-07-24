@@ -13,7 +13,7 @@
  *  Date: 2014-08-14
  *  
  *  Zones
- *  This device type supports up to 36 zones.  All the coding is in place
+ *  This device type supports up to 39 zones.  All the coding is in place
  *  To adjust the number of zones, simply trim the number of zones listed in the <details> argument list.
  *  No other code needs to be modified! (however you can tidy up your event log by deleting  the additional code that refers to unused zones).
  *  
@@ -40,7 +40,7 @@ preferences {
 
 
 metadata {
-	definition (name: "AD2SmartThings v4.4.1", version: "4.4.1",author: "stan@dotson.info") 
+	definition (name: "AD2SmartThings v4.4.1", version: "4.4.1",author: "Stan Dotson and Michael Ritchie") 
     	{
 
 	capability "Switch"  // <on> will arm alarm in "stay" mode; same as armStay
