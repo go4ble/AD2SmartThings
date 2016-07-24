@@ -1,4 +1,6 @@
-## AD2SmartThings v4.1
+
+
+## AD2SmartThings v4
 ### ===================
 ### Integrate your Honeywell or Ademco alarm panel into your SmartThings physical graph
 ADT / Honeywell / Ademco / Vista / Alarm / SmartThings / Alarm Panel / Home Alarm
@@ -16,7 +18,7 @@ After installing this project, control of your alarm panel becomes intuitive and
 
 
 ***Release Note:***
-*This release allows for independent zone processing and reduces the logging from the Aruidno in SmartThings recent history. Also included is a SmartApp that will automatically create virtual contact and motion sensors which allows you to subscribe to these from other SmartApps. The release includes a new Version 4.1 of the Arduino sketch and a new README with updated project instructions.  The libraries from SmartThings and the ArduinoMega library are not compatable with this Version 4.1 sketch. You must use the ST_Anything SmartThings library. A big thanks to Daniel Ogorchock and his son, Daniel Ogorchock, for creating a superior version of the SmartThings library with many enhancements and  full support for the Arduino Mega. This release is not backwards compatable with the Version 1.X device type.*
+*This release standardizes the hardware assembly of the AD2SmartThings device, which addresses the top two support issues.  The release includes a new Version 2.1 of the Arduino sketch and a new README with updated project instructions.  The release does not add any additional capabilities to Version 2.0 and uses the same Device Type.  If you already updated to Version 2.0 or recently completed the project, I don't see any reason to update.  However, if you still want to update, you simply reconfigure your hardware and update the Arduino sketch being sure to include the ST_Anything SmartThings library.  The libraries from SmartThings and the ArduinoMega library are not compatable with this Version 2.1 sketch. You must use the ST_Anything SmartThings library. A big thanks to Daniel Ogorchock and his son, Daniel Ogorchock, for creating a superior version of the SmartThings library with many enhancements and  full support for the Arduino Mega. This release is not backwards compatable with the Version 1.X device type.*
 
 ## High Level Project Steps
 
@@ -43,7 +45,6 @@ All other items from this project were easily obtained from Amazon via Amazon Pr
 * Arduino MEGA
 * SmartThings ThingShield for Arduino
 * Jumper wires
-* 9V power adapter (be sure the reviews indicate the power supply is compatable with Arduino)
 
 
 ### An ArduinoMega, SmartThing ThingShield and AD2Pi
@@ -62,8 +63,10 @@ For the wiring, I used individual male to male jumper cables to wire the project
 <img src="https://cloud.githubusercontent.com/assets/5625006/4343969/333ffca2-406d-11e4-95ef-287c4dfa869b.jpg" width="200px"  />
 
 
-### Power Supplies
-To power the ArduinoMega I used a 9V power supply to run the Arduino+ThingShield.  This was  purchased at Amazon as well by searching for "Arduino Power Supply".  Right now, I am using the Super Power Supply® AC / DC Adapter Charger Cord Plug - 9V 650mA compatible with Arduino Freeduino Duemilanove Uno Mega Hobby Electronics, which was available by Amazon Prime.   CAUTION: There are 9V power supplies availble on Amazon that do not work for the Arduino (they are made for musical instrament controllers) and some that perform very poorly on Arduino.  Be sure to read the reviews on Amazon to find an Arduino compatable power supply!  
+### Power 
+During programming, the Arduino will be powered by the USB connection to your computer.  Once installed, the Arduino + AD2Pi will be powered by the alarm panel.  This has the added advantage of using the alarm panel battery backup as backup power to the Arduino + AD2Pi.  If power goes out, connectivity will be preserved as long as your internet+SmartThings hub is on a back up power supply and as long as the Alarm Panel battery lasts.  
+
+
 
 ### Project Housing
 I simply strapped the Arduino onto a foam board and inserted it into my alarm panel box
@@ -130,7 +133,7 @@ http://arduino.cc/en/main/software
 
 Once the software is installed, the first thing to do is obtain the required libraries.  
 
-* ArduinoJson library was created by Benoit Blanchon.  A copy is included in this repository/release for your convenience.
+* Timer library was created by Simon Monk as modified by JChristensen.  A copy is included in this repository/release for your convenience.
 * A copy of the SmartThings library contained in this repository/release.  This is the ST_Anything version of the SmartThings library.  The libraries from SmartThings and the SmartThingsMega libraries do not work.
 * SoftwareSerial library was default library provided with Arduino IDE
  
@@ -205,22 +208,6 @@ To install the device type code:
 10.  Select your Arduino and using the drop down, select your newly created AD2SmartThings device type (v2 or later).
 11.  Go to your mobile device and the Arduino tile should now display as a Home Alarm tile.  Hint: on the iPhone, sometimes you have to kill the SmartThings app two times before a new device type update will display on the SmartThings iPhone app.
 
-To install the SmartApp code: 
-
-1.  Go to graph.api.smartthings.com   
-2.  Select My Device Types tab
-3.  Click the +NewSmartDevice button
-4.  Choose "From Code" tab
-5.  Paste the Simulated_Contact_Sensor_Device_Handler device type code from this repository
-6.  Save and Publish (for me) the device type.  You have to Publish!
-7.  Repeat steps 3-6 for the Simulated_Motion_Sensor_Device_Handler device type code from this repository.
-9.  Go to My SmartApps tab
-10. Click + New AmartApp button
-11. Choose "From Code" tab
-12. Paste the Alarm_Handler_SmartApp code from this repository
-13. Save and Publish (for me) the device type.  You have to Publish!
-14. Go to your mobile device and to the SmartThings Market in the bottom right corner of the app.  Select the SmartApps tab and scroll to the bottom of the list.  Select My Apps and choose Alarm handler and configure it based on your alarm zone settings.
-
 ## Connect Your Project To Your Alarm Panel
 
 ### Wiring The AD2Pi to your Honeywell or Ademco alarm panel
@@ -228,6 +215,26 @@ To install the SmartApp code:
 There is excellent documentation on the Alarm Decoder web site, including an instructional video.  Look for instructions on how to wire the AD2USB which are the same instructions for the AD2Pi used in this project.  Here is the URL:
 
 http://www.alarmdecoder.com/wiki/index.php/Panel_Configuration
+
+Make the following connections from both the AD2Pi and Arduino to the Alarm Panel
+
+| Jumper   | Arduino Pin     | Alarm Panel Terminal                  |
+|:--------:|:---------------:|:-------------------------------------:|
+| Ground   |  GND            | Black Console Ground Return (-)       |
+| Power    |  VIN            | Red Console PWR (+)                   |
+
+
+| Jumper   | AD2Pi Pin       | Alarm Panel Terminal                  |
+|:--------:|:---------------:|:-------------------------------------:|
+| Ground   |  GND Black      | Black Console Ground Return (-)       |
+| Power    |  12V Red        | Red Console PWR (+)                   |
+| Data Out |  DO yellow      | Yellow Data Out To Console            |
+| Data In  |  DI green       | Green Data In From                    |
+
+
+After making all the connections, reconnect alarm console to 120v and then reconnect the alarm console to its battery backup.  The Arduino should be powered on and the AD2Pi LED should be be slowly and steadily blinking.
+
+
 
 ### Configuring Your System To Work With Vista10SE or other SE-series
 The VistaSE series requires the AD2Pi to be configured with an ADDRESS=31.   To do this, go to the Preferences tile on your mobile device and in the Configuration box, enter "ADDRESS=31".  All caps, no spaces and no quotes.  After entering this in the Preferences, you must then press the Config AD2Pi tile to send down the configuration command to the AD2Pi.  You will see the Message tile indicate !Sending and then you should see a confirmation message of "ADDRESS=31".  You can double check your work by going back to the Preferences, erasing the command (recommended) and then pressing the ConfigAD2Pi tile once again.  The Message tile will report back the current address of the AD2Pi.  
