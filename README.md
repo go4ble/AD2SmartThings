@@ -73,6 +73,10 @@ I simply strapped the Arduino onto a foam board and inserted it into my alarm pa
 
 ## Constructing Your Project
 
+Here is a high level overview of the entire project.  This README will take you through each step by step.
+
+<img src="https://cloud.githubusercontent.com/assets/5625006/17085596/fde87456-51a1-11e6-95eb-135111ad8170.jpg" width="200px"  />   
+
 ### Wiring The Arduino Controller and Configuring The ThingShield
 
 An **Arduino Mega* was used as the controller and was stacked with the SmartThings ThingShield.  
@@ -232,8 +236,12 @@ Make the following connections from both the AD2Pi and Arduino to the Alarm Pane
 | Data In  |  DI green       | Green Data In From                    |
 
 
-After making all the connections, reconnect alarm console to 120v and then reconnect the alarm console to its battery backup.  The Arduino should be powered on and the AD2Pi LED should be be slowly and steadily blinking.
+Here is a close up of the terminals that connect AD2Pi to the alarm console
 
+<img src="https://cloud.githubusercontent.com/assets/5625006/17085581/b5c00ee6-51a1-11e6-87e3-f7ff1e1c0eda.jpg" width="200px"  />
+
+
+After making all the connections, reconnect alarm console to 120v and then reconnect the alarm console to its battery backup.  The Arduino should be powered on and the AD2Pi LED should be be slowly and steadily blinking.
 
 
 ### Configuring Your System To Work With Vista10SE or other SE-series
