@@ -396,7 +396,7 @@ def parse(String description) {
         if (activeZone.equals("") || activeZone == null) {
             // Do Nothing
         } else {
-            result << createEvent(name: "zone${activeZone.trim()}", value: "active", descriptionText: alarmMsg, displayed: true, isStateChange: true, isPhysical: true)
+            result << createEvent(name: "zone${activeZone.trim()}", value: "active", descriptionText: keypadMsg, displayed: true, isStateChange: true, isPhysical: true)
             if (isDebugEnabled) log.debug "Created active event for zone${activeZone.trim()}"
         }
         
@@ -415,7 +415,7 @@ def parse(String description) {
             def inactiveArray = inactiveList.toString().split(",");     
             for (int i = 0; i < inactiveArray.size(); i++) {
                 if (device.currentValue("zone${inactiveArray[i].trim()}") == "active") {
-                	result << createEvent(name: "zone${inactiveArray[i].trim()}", value: "inactive", descriptionText: alarmMsg, displayed: true, isStateChange: true, isPhysical: true)
+                	result << createEvent(name: "zone${inactiveArray[i].trim()}", value: "inactive", descriptionText: keypadMsg, displayed: true, isStateChange: true, isPhysical: true)
                 	if (isDebugEnabled) log.debug "Created inactive event for zone${inactiveArray[i].trim()}"
                 }
             }
