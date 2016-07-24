@@ -319,8 +319,8 @@ Have fun integrating!
     * The keypad address that you selected for the AD2Pi is in conflict with an exisiting physical keypad.   The AD2Pi needs to be set at a unique address.  Exception is Vista10 units where all keypads use the same address (31).
     * Replace the jumper wires for the D0 and D1 ports on the AD2Pi to be sure there is not a short
 
-##TROUBLESHOOTING USING Live Logging
-You can go to api.graph.smartthings.com and open the Live Logging Tab.  This can give you some useful diagnostics, in case your system is not working as expected.
+### Trouble shooting using Live Logging
+You can go to api.graph.smartthings.com and open the Live Logging Tab.  This can give you some useful diagnostics, in case your system is not working as expected.  You can also set isDebugEnabled to 'true' in both the device handler and the arduino sketch to get additional log information in Live Logging tab and the Arduino Console window, respectively
 
 ##Credits
 
