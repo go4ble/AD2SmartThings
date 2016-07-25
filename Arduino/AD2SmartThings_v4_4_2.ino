@@ -1,5 +1,5 @@
 /** 
- * AD2SmartThings v4_4_3
+ * AD2SmartThings v4_4_2
  * Couple your Ademco/Honeywell Alarm to your SmartThings Graph using an AD2PI, an Arduino and a ThingShield
  * The Arduino passes all your alarm messages to your SmartThings Graph where they can be processed by the Device Type
  * Use the Device Type to control your alarm or use SmartApps to integrate with other events in your home graph
@@ -311,6 +311,10 @@ void processAD2() {
   } else if (zoneNumber < lastZone) {
     //Fault list starting over, determine if any faults dropped from list between zone 1 and current zone and also between the lastZone and numZones
     inactiveList = getActiveList(1, zoneNumber);
+    //if fault list is starting over at zone1, need to check from lastZone+1 and zoneNumber
+    if (zoneNumber == 1) {
+      inactiveList = inactiveList + getActiveList(lastZone+1, numZones+1);
+    }
     serialLog ("zoneNumber(" + String(zoneNumber) + ") < lastZone(" + String(lastZone) + "): Faults Dropped from list and marked inactive: " + String(inactiveList));
 
     lastZone = zoneNumber;
@@ -440,17 +444,12 @@ String getValue(String data, char separator, int index) {
   return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
 }
 
-String getActiveList(int startNum, int endNum) {
+String getActiveList(int start, int end) {
   String faultList; 
-  if (startNum == 1 && endNum == 1) {
-    // Do nothing
-    faultList = ",";
-  } else {
-    for (int i = startNum; i < endNum; ++i) {
-      if (zoneStatusList[i] == 1) { 
-        faultList = faultList + String(i) + ",";
-        zoneStatusList[i] = 0;  //when using getActiveList to return the deactive list, you want to zero out the deactive zones.
-      }
+  for (int i = start; i < end; ++i) {
+    if (zoneStatusList[i] == 1) { 
+      faultList = faultList + String(i) + ",";
+      zoneStatusList[i] = 0;  //when using getActiveList to return the deactive list, you want to zero out the deactive zones.
     }
   }
  
