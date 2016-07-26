@@ -51,11 +51,12 @@
 // Set the number of zones in your system
 #define numZones      36
 
-// You have the option to set your security code in the Device Handler or here in the sketch.  Your security code must be set.
-// The code in the Device Handler takes priority if set.
+// You have the option to set your homeowners 4 digit security code in the Device Handler or you can hard code it here in the sketch.  
+// Either way, you must set a securitiy code!!!!!  Without a security code, you can receive messages but you will be unable to control the panel
+// The code in the Device Handler takes priority over any hard code you set below
 String securityCode = "";
 
-boolean isDebugEnabled=true;  //set to true to debug
+boolean isDebugEnabled=false;  //set to 'true' to debug using the Arduino IDE Serial Monitor (go to <Tools <Serial Monitor)  Hint: can be used to confirm AD2Pi is sending messages to Arduino
 
 /************************************************* End User Settings *************************************************/
 
@@ -165,8 +166,12 @@ void processAD2() {
   if (str.indexOf("!Sending") >= 0) {
     String sendMessage = ("|||||"+ str);
     smartthing.send(sendMessage);
-    previousSendData = "";  //trip process to send subsequent message to smartthings
+    //trip system to send a fresh system status to the device handler
+    //basically, this serves as a "soft refresh" of the device handler status activated by pressing any of the system command tiles, such as disarm
+    previousPowerStatus = "";
+    previousChimeStatus = "";
     previousAlarmStatus = "";
+    previousSendData = "";  
     return;
   } 
 
@@ -381,6 +386,7 @@ void processAD2() {
 }
 
 void messageCallout(String message) { 
+  
   if(message.length() > 0) { //avoids processing ping from hub
     // Parse message from SmartThings
     String msgType = getValue(message, '|', 0);
@@ -393,18 +399,27 @@ void messageCallout(String message) {
       //Check to make sure a security code is set and if not update the device handler keypad message
       if (msgSecurityCode == "") {
         serialLog( "Security code not set.  Updated SmartThings.");
-        smartthing.send(String("||disarmed|||Alarm security not set!"));\
+        smartthing.send(String("||disarmed|||Alarm security code not set!"));\
         return;
       }
+      
+      //ToDo: check to make sure the security code is a valid code recognized by alarm system
+//     if (??) {
+//        serialLog( "Security code is invalid.  Updated SmartThings.");
+//        smartthing.send(String("||disarmed|||Alarm security code is not valid!"));\
+//        return;
+//      }
     
       //Check to see if arming away and if alarm is ready, if not send notification that alarm cannot be armed.
       //This won't work for arming stay since motions could be active that don't affect arm stay.
       if (msgCmd == "2" && zoneStatusList[0] > 0) {
         serialLog( "Alarm not ready, cannot arm.  Updated SmartThings.");
         smartthing.send(String("||disarmed|||Alarm not ready; cannot arm"));\
+
+      //go ahead and process the command and send to the AD2Pi which in turns forwards to the alarm console
       } else {
         String sendCommand = msgSecurityCode + msgCmd;
-        Serial1.println(sendCommand);  //send AD2Pi the command to pass on to Alarm Panel
+        Serial1.println(sendCommand);  
         //serialLog("Sent AD2Pi: " + sendCommand);
       }
     } else if (msgType.equals("CONF")) {
@@ -444,9 +459,9 @@ String getValue(String data, char separator, int index) {
   return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
 }
 
-String getActiveList(int start, int end) {
+String getActiveList(int startNum, int endNum) {
   String faultList; 
-  for (int i = start; i < end; ++i) {
+  for (int i = startNum; i < endNum; ++i) {
     if (zoneStatusList[i] == 1) { 
       faultList = faultList + String(i) + ",";
       zoneStatusList[i] = 0;  //when using getActiveList to return the deactive list, you want to zero out the deactive zones.
