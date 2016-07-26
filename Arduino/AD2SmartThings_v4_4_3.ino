@@ -1,5 +1,5 @@
 /** 
- * AD2SmartThings v4_4_2
+ * AD2SmartThings v4_4_3
  * Couple your Ademco/Honeywell Alarm to your SmartThings Graph using an AD2PI, an Arduino and a ThingShield
  * The Arduino passes all your alarm messages to your SmartThings Graph where they can be processed by the Device Type
  * Use the Device Type to control your alarm or use SmartApps to integrate with other events in your home graph
@@ -48,7 +48,7 @@
 /*************************************************** User Settings ***************************************************
  * This section contains parameters that need to be set during initial setup.*/
 
-// Set the number of zones in your system
+// Set the highest numbered zone in your system.  This is not the total number of zones, but the highest zone number.
 #define numZones      36
 
 // You have the option to set your homeowners 4 digit security code in the Device Handler or you can hard code it here in the sketch.  
