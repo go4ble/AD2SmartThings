@@ -28,7 +28,7 @@ Note: This release is not backwards compatable with the Version 3.X or earlier. 
 2. Add SmartThings hub to your home network, download app to your iPhone
 3. Obtain a Maker/Developer account for SmartThings (graph.api.smartthings.com)
 4. Assemble the Arduino Mega, ThingShield and AD2Pi.  Power up.
-5. Download the Arduino developer environment and import the AD2SmartThings sketch as well as the required libraries, including the SmartThing (ST_Anything version) and the Timer library.  Transfer the sketch to the ArduinoMega over USB.
+5. Download the Arduino developer environment and import the AD2SmartThings sketch as well as the ST_Anything library.  Edit the sketch to reflect the number of zones for your system.  Transfer the sketch to the ArduinoMega over USB.
 6. Add ArduinoMega/ThingShield to your SmartThings hub using your iPhone app
 7. Go to graph.api.smartthings.com
   1. On My Device Types, create a new device type and paste in the device type code.  Save & Publish
@@ -142,7 +142,9 @@ Once the software is installed, the first thing to do is obtain the required lib
 * A copy of the SmartThings library contained in this repository/release.  This is the ST_Anything version of the SmartThings library.  The libraries from SmartThings and the SmartThingsMega libraries do not work.
 * SoftwareSerial library was default library provided with Arduino IDE
  
-Once you have the zip files downloaded you can import them within the Arduino IDE. Go to the Sketch:Import Library;Add Library drop down menu. Once you have added the libraries, they will show up under Sketch:Add Library:Contributed as "Timer" and "SmartThings".  Be sure the Timer library is installed and named: "Timer"
+Once you have the zip files downloaded you can import them within the Arduino IDE. Go to the Sketch:Import Library;Add Library drop down menu. Once you have added the libraries, they will show up under Sketch:Add Library:Contributed as "SmartThings".  
+
+Optionally, you can edit the sketch to match the highest zone number in your system.  Note, this is the highest zone number not the total number of zones.  If you have only a few zones and the highest zone is a low number, by editing the sketch, the software will be more efficient at processing alarm panel messages.  To make the edit, go to the code where it says numZones = 36 and change the number to the highest zone.  If the highest zone is greater than 36, you can make the number higher as well (you may have to edit the device handler if the highest zone is greater than 39).
 
 You can connect the Arduino Mega to your computer via an USB cable, create a new sketch, paste the code from github into the Arduino IDE and then transfer to the ArduinoMEGA.  Be sure to go to the tools menu, select <Board> and then select the ArduinoMega 2560 so that the code will compile correctly and not time out during transfer.  
 
