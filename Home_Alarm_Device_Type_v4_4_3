@@ -405,7 +405,6 @@ def parse(String description) {
         if (inactiveList.equals("") || inactiveList == null) {
             // Do Nothing
         } else {
-            if (isDebugEnabled) log.debug "inactiveList before: ${inactiveList}"
             if (inactiveList.toString().indexOf("allClear") > -1) {
                 def numZones  = inactiveList.substring(inactiveList.indexOf(":") + 1).toInteger()
                 inactiveList = ""
@@ -416,7 +415,7 @@ def parse(String description) {
             def inactiveArray = inactiveList.toString().split(",");     
             for (int i = 0; i < inactiveArray.size(); i++) {
                 if (device.currentValue("zone${inactiveArray[i].trim()}") == "active") {
-                	result << createEvent(name: "zone${inactiveArray[i].trim()}", value: "inactive", descriptionText: keypadMsg, displayed: true, isStateChange: true, isPhysical: true)
+                	result << createEvent(name: "zone${inactiveArray[i].trim()}", value: "inactive", displayed: true, isStateChange: true, isPhysical: true)
                 	if (isDebugEnabled) log.debug "Created inactive event for zone${inactiveArray[i].trim()}"
                 }
             }
