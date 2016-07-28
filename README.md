@@ -18,7 +18,11 @@ After installing this project, control of your alarm panel becomes intuitive and
 
 
 ***Release Note:***
-*This release standardizes the hardware assembly of the AD2SmartThings device, which addresses the top two support issues.  The release includes a new Version 2.1 of the Arduino sketch and a new README with updated project instructions.  The release does not add any additional capabilities to Version 2.0 and uses the same Device Type.  If you already updated to Version 2.0 or recently completed the project, I don't see any reason to update.  However, if you still want to update, you simply reconfigure your hardware and update the Arduino sketch being sure to include the ST_Anything SmartThings library.  The libraries from SmartThings and the ArduinoMega library are not compatable with this Version 2.1 sketch. You must use the ST_Anything SmartThings library. A big thanks to Daniel Ogorchock and his son, Daniel Ogorchock, for creating a superior version of the SmartThings library with many enhancements and  full support for the Arduino Mega. This release is not backwards compatable with the Version 1.X device type.*
+
+*-*This release allows for independent zone processing and reduces the logging from the Aruidno in SmartThings recent history log. Also included is a SmartApp that will automatically create virtual contact and motion sensors which allows you to subscribe to these from other SmartApps. This release also standardizes the hardware assembly of the AD2SmartThings device, which addresses the top two support issues. In addition, we provide more detailed instructions on how to power your project using the alarm console.   The release includes new version 4 code bases for both the Arduino sketch, the device handler and a new README with updated project instructions.
+
+Note: This release is not backwards compatable with the Version 3.X or earlier.  Be sure to install both the sketch and new device handler to upgrade.   The libraries from SmartThings and the ArduinoMega library which can be found on github are not compatable with v4 and later sketches. You must use the ST_Anything SmartThings library. A big thanks to Daniel Ogorchock and his son, Daniel Ogorchock, for creating a superior version of the SmartThings library with many enhancements and  full support for the Arduino Mega. 
+
 
 ## High Level Project Steps
 
@@ -26,7 +30,7 @@ After installing this project, control of your alarm panel becomes intuitive and
 2. Add SmartThings hub to your home network, download app to your iPhone
 3. Obtain a Maker/Developer account for SmartThings (graph.api.smartthings.com)
 4. Assemble the Arduino Mega, ThingShield and AD2Pi.  Power up.
-5. Download the Arduino developer environment and import the AD2SmartThings sketch as well as the required libraries, including the SmartThing (ST_Anything version) and the Timer library.  Transfer the sketch to the ArduinoMega over USB.
+5. Download the Arduino developer environment and import the AD2SmartThings sketch as well as the ST_Anything library.  Edit the sketch to reflect the number of zones for your system.  Transfer the sketch to the ArduinoMega over USB.
 6. Add ArduinoMega/ThingShield to your SmartThings hub using your iPhone app
 7. Go to graph.api.smartthings.com
   1. On My Device Types, create a new device type and paste in the device type code.  Save & Publish
@@ -72,6 +76,10 @@ During programming, the Arduino will be powered by the USB connection to your co
 I simply strapped the Arduino onto a foam board and inserted it into my alarm panel box
 
 ## Constructing Your Project
+
+Here is a high level overview of the entire project.  This README will take you through each step by step.
+
+<img src="https://cloud.githubusercontent.com/assets/5625006/17085596/fde87456-51a1-11e6-95eb-135111ad8170.jpg" width="200px"  />   
 
 ### Wiring The Arduino Controller and Configuring The ThingShield
 
@@ -133,11 +141,13 @@ http://arduino.cc/en/main/software
 
 Once the software is installed, the first thing to do is obtain the required libraries.  
 
-* Timer library was created by Simon Monk as modified by JChristensen.  A copy is included in this repository/release for your convenience.
+
 * A copy of the SmartThings library contained in this repository/release.  This is the ST_Anything version of the SmartThings library.  The libraries from SmartThings and the SmartThingsMega libraries do not work.
 * SoftwareSerial library was default library provided with Arduino IDE
  
-Once you have the zip files downloaded you can import them within the Arduino IDE. Go to the Sketch:Import Library;Add Library drop down menu. Once you have added the libraries, they will show up under Sketch:Add Library:Contributed as "Timer" and "SmartThings".  Be sure the Timer library is installed and named: "Timer"
+Once you have the zip files downloaded you can import them within the Arduino IDE. Go to the Sketch:Import Library;Add Library drop down menu. Once you have added the libraries, they will show up under Sketch:Add Library:Contributed as "SmartThings".  
+
+Optionally, you can edit the sketch to match the highest zone number in your system.  Note, this is the highest zone number not the total number of zones.  If you have only a few zones and the highest zone is a low number, by editing the sketch, the software will be more efficient at processing alarm panel messages.  To make the edit, go to the code where it says numZones = 36 and change the number to the highest zone.  If the highest zone is greater than 36, you can make the number higher as well (you may have to edit the device handler if the highest zone is greater than 39).
 
 You can connect the Arduino Mega to your computer via an USB cable, create a new sketch, paste the code from github into the Arduino IDE and then transfer to the ArduinoMEGA.  Be sure to go to the tools menu, select <Board> and then select the ArduinoMega 2560 so that the code will compile correctly and not time out during transfer.  
 
@@ -192,8 +202,6 @@ In addition to the above tiles, notice the 3 VERTICAL DOTS in the top right corn
 
 <img src="https://cloud.githubusercontent.com/assets/5625006/12284673/553310c2-b977-11e5-8632-86b96dc9e7dd.jpg" width="200px"  />
 
-
-
 To install the device type code: 
 
 1.  Go to graph.api.smartthings.com   
@@ -208,32 +216,30 @@ To install the device type code:
 10.  Select your Arduino and using the drop down, select your newly created AD2SmartThings device type (v2 or later).
 11.  Go to your mobile device and the Arduino tile should now display as a Home Alarm tile.  Hint: on the iPhone, sometimes you have to kill the SmartThings app two times before a new device type update will display on the SmartThings iPhone app.
 
-## Connect Your Project To Your Alarm Panel
-
-### Wiring The AD2Pi to your Honeywell or Ademco alarm panel
-
-There is excellent documentation on the Alarm Decoder web site, including an instructional video.  Look for instructions on how to wire the AD2USB which are the same instructions for the AD2Pi used in this project.  Here is the URL:
-
-http://www.alarmdecoder.com/wiki/index.php/Panel_Configuration
-
-Make the following connections from both the AD2Pi and Arduino to the Alarm Panel
-
-| Jumper   | Arduino Pin     | Alarm Panel Terminal                  |
-|:--------:|:---------------:|:-------------------------------------:|
-| Ground   |  GND            | Black Console Ground Return (-)       |
-| Power    |  VIN            | Red Console PWR (+)                   |
 
 
-| Jumper   | AD2Pi Pin       | Alarm Panel Terminal                  |
-|:--------:|:---------------:|:-------------------------------------:|
-| Ground   |  GND Black      | Black Console Ground Return (-)       |
-| Power    |  12V Red        | Red Console PWR (+)                   |
-| Data Out |  DO yellow      | Yellow Data Out To Console            |
-| Data In  |  DI green       | Green Data In From                    |
+To install the SmartApp code: 
+ 1.  Go to graph.api.smartthings.com   
+ 2.  Select My Device Types tab
+ 3.  Click the +NewSmartDevice button
+ 4.  Choose "From Code" tab
+ 5.  Paste the Simulated_Contact_Sensor_Device_Handler device type code from this repository
+ 6.  Save and Publish (for me) the device type.  You have to Publish!
+ 7.  Repeat steps 3-6 for the Simulated_Motion_Sensor_Device_Handler device type code from this repository.
+ 9.  Go to My SmartApps tab
+ 10. Click + New AmartApp button
+ 11. Choose "From Code" tab
+ 12. Paste the Alarm_Handler_SmartApp code from this repository
+ 13. Save and Publish (for me) the device type.  You have to Publish!
+ 14. Go to your mobile device and to the SmartThings Market in the bottom right corner of the app.  Select the SmartApps tab and scroll to the bottom of the list.  Select My Apps and choose Alarm handler and configure it based on your alarm zone settings (do this last after you get the system fully connected and running)
+ 
+
+Here is a close up of the terminals that connect AD2Pi to the alarm console
+
+<img src="https://cloud.githubusercontent.com/assets/5625006/17085581/b5c00ee6-51a1-11e6-87e3-f7ff1e1c0eda.jpg" width="200px"  />
 
 
 After making all the connections, reconnect alarm console to 120v and then reconnect the alarm console to its battery backup.  The Arduino should be powered on and the AD2Pi LED should be be slowly and steadily blinking.
-
 
 
 ### Configuring Your System To Work With Vista10SE or other SE-series
@@ -296,8 +302,8 @@ Have fun integrating!
     * The keypad address that you selected for the AD2Pi is in conflict with an exisiting physical keypad.   The AD2Pi needs to be set at a unique address.  Exception is Vista10 units where all keypads use the same address (31).
     * Replace the jumper wires for the D0 and D1 ports on the AD2Pi to be sure there is not a short
 
-##TROUBLESHOOTING USING Live Logging
-You can go to api.graph.smartthings.com and open the Live Logging Tab.  This can give you some useful diagnostics, in case your system is not working as expected.
+### Trouble shooting using Live Logging
+You can go to api.graph.smartthings.com and open the Live Logging Tab.  This can give you some useful diagnostics, in case your system is not working as expected.  You can also set isDebugEnabled to 'true' in both the device handler and the arduino sketch to get additional log information in Live Logging tab and the Arduino Console window, respectively
 
 ##Credits
 
