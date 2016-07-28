@@ -1,5 +1,5 @@
 /** 
- * AD2SmartThings v4_4_3
+ * AD2SmartThings v4_4_4
  * Couple your Ademco/Honeywell Alarm to your SmartThings Graph using an AD2PI, an Arduino and a ThingShield
  * The Arduino passes all your alarm messages to your SmartThings Graph where they can be processed by the Device Type
  * Use the Device Type to control your alarm or use SmartApps to integrate with other events in your home graph
@@ -13,7 +13,6 @@
  * https://github.com/DanielOgorchock/ST_Anything/tree/master/Arduino/libraries/SmartThings
  *
  * SoftwareSerial library was default library provided with Arduino IDE
- *
  *
  ****************************************************************************************************************************
  *
@@ -31,8 +30,6 @@
  *    TX        14        2   
  *    RX        15        3
  *    
- *
- *
  * Credit: thanks to github contributor vassilisv for the intial idea and to AlarmDecoder.com for suggesting to use
  * serial out feature of the AD2Pi to connect to the Arduino card.  This project also benefitted imenseley from code 
  * shared by SmartThings contributor  @craig
@@ -41,22 +38,33 @@
  * to use the hardware serial port on the Mega and for general performance enhancements.
  */
 
-
 #include <SoftwareSerial.h>
 #include <SmartThings.h>  //be sure you are using the library from ST_ANYTHING which has support for hardware serial on the Arduino Mega
 
 /*************************************************** User Settings ***************************************************
- * This section contains parameters that need to be set during initial setup.*/
+ * This section contains parameters that need to be set during initial setup.                                        */
 
 // Set the highest numbered zone in your system.  This is not the total number of zones, but the highest zone number.
 #define numZones      36
 
-// You have the option to set your homeowners 4 digit security code in the Device Handler or you can hard code it here in the sketch.  
-// Either way, you must set a securitiy code!!!!!  Without a security code, you can receive messages but you will be unable to control the panel
-// The code in the Device Handler takes priority over any hard code you set below
+/* You have the option to set your security code in the Device Handler or here in the sketch.  Your security code
+ * must be set.  The code in the Device Handler takes priority if set.                                               */
 String securityCode = "";
 
-boolean isDebugEnabled=false;  //set to 'true' to debug using the Arduino IDE Serial Monitor (go to <Tools <Serial Monitor)  Hint: can be used to confirm AD2Pi is sending messages to Arduino
+/* Each time a command is sent from SmartThings to the alarm panel, the AD2Pi confirms the command was sent to the
+ * panel with '!Sending.done'. These messages can be useful during the initial installation to confirm whether the
+ * AD2Pi is properly connected to the alarm panel. There may be up to five periods between 'Sending' and 'done'.
+ * If there are five the keypress has timed out and you should confirm your wiring. After initial install these
+ * messages aren't necessary and can overload SmartThings with too many consecutive alerts preventing important
+ * updates from being processed.  Set the below parameter to true during initial install if you are having trouble.
+ * If not leave it false.                                                                                            */
+boolean debugAD2Pi = false;
+
+/* Debugging has been included in this Arduino sketch as well as the SmartThings device handler.  To debug the Arduino sketch, set the 
+ * isDebugEnabled variable to true, upload the code, and launch the Serial Monitor.  When debugging the Arduino it is also useful to set
+ * the isDebugEnabled variable to true in the SmartThings device handler to confirm messages sent from the Arduino to SmartThings.
+ * You can view debug messages in SmartThings in Live Logging.                                                       */
+boolean isDebugEnabled = false;
 
 /************************************************* End User Settings *************************************************/
 
@@ -163,20 +171,17 @@ void processAD2() {
     previousAlarmStatus = "";
     return;
   } 
-  if (str.indexOf("!Sending") >= 0) {
-    String sendMessage = ("|||||"+ str);
+  if (str.indexOf("!Sending") >= 0 && debugAD2Pi) {
+    String sendMessage = (str);
     smartthing.send(sendMessage);
-    //trip system to send a fresh system status to the device handler
-    //basically, this serves as a "soft refresh" of the device handler status activated by pressing any of the system command tiles, such as disarm
-    previousPowerStatus = "";
-    previousChimeStatus = "";
-    previousAlarmStatus = "";
-    previousSendData = "";  
     return;
   } 
 
-  // AD2Pi messages that can be handled at Arduino without device handler
-  if (str.indexOf("Hit * for faults") >= 0) {
+  /* By default the alarm panel doesn't display individual faults but they can be displayed by hitting the * key.  If the panel is disarmed via SmartThings, the * key
+   * is automatically included during disarm.  But if the panel is disarmed via keypad, the panel may prompt for the * key.  The code below will look for the prompt
+   * and hit the * key. The messages do vary from panel to panel because the message is set by the installer.  If for some reason this isn't working for you, validate
+   * the message displayed on your alarm panel and make sure the text between the quotes matches what is displayed. */
+  if (str.indexOf("* for faults") >= 0 || str.indexOf("* key") >= 0) {
     String sendCommand = "***";
     Serial1.println(sendCommand);  //send AD2Pi the command to pass on to Alarm Panel
     return;
@@ -386,7 +391,6 @@ void processAD2() {
 }
 
 void messageCallout(String message) { 
-  
   if(message.length() > 0) { //avoids processing ping from hub
     // Parse message from SmartThings
     String msgType = getValue(message, '|', 0);
@@ -402,25 +406,28 @@ void messageCallout(String message) {
         smartthing.send(String("||disarmed|||Alarm security code not set!"));\
         return;
       }
-      
-      //ToDo: check to make sure the security code is a valid code recognized by alarm system
-//     if (??) {
-//        serialLog( "Security code is invalid.  Updated SmartThings.");
-//        smartthing.send(String("||disarmed|||Alarm security code is not valid!"));\
-//        return;
-//      }
     
       //Check to see if arming away and if alarm is ready, if not send notification that alarm cannot be armed.
       //This won't work for arming stay since motions could be active that don't affect arm stay.
       if (msgCmd == "2" && zoneStatusList[0] > 0) {
         serialLog( "Alarm not ready, cannot arm.  Updated SmartThings.");
-        smartthing.send(String("||disarmed|||Alarm not ready; cannot arm"));\
+        smartthing.send(String("||disarmed|||Alarm not ready. Cannot arm."));\
 
       //go ahead and process the command and send to the AD2Pi which in turns forwards to the alarm console
       } else {
         String sendCommand = msgSecurityCode + msgCmd;
         Serial1.println(sendCommand);  
         //serialLog("Sent AD2Pi: " + sendCommand);
+		
+        /* The following code will perform a soft refresh of the device handler status.  This can be activated by pressing the disarm
+         * button while the alarm is already disarmed. */
+         serialLog("msgCmd: " + msgCmd + "previousAlarmStatus: " + previousAlarmStatus);
+        if (msgCmd.startsWith("1") && previousAlarmStatus == "disarmed") {
+          previousPowerStatus = "";
+          previousChimeStatus = "";
+          previousAlarmStatus = "";
+          previousSendData = "";
+        }
       }
     } else if (msgType.equals("CONF")) {
       Serial1.println("C" + msgCmd);  //send configuration command to AD2Pi
