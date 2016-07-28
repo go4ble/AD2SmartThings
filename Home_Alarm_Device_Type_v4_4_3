@@ -34,7 +34,8 @@ preferences {
     // pressing the "Config" tile and sending null will harmlessly request the alarm panel to report out its Configurtion into the message tile.
     
     input("configCommand", "text", title: "AD2Pi Configuration Command", description: "for example ADDRESS=31", defaultValue: '', required: false, displayDuringSetup: true)
-	input(name: "securityCode", type: "text", title: "Enter your 4 digit homeowner security code", description: "enter 4 digit code", defaultValue:"", required: true, displayDuringSetup: true)
+    input("securityCode", "text", title: "Option: Enter your 4 digit homeowner security code here or in the Arduino sketch",
+    	description: "Code entered here takes priority.", defaultValue: "", required: false, displayDuringSetup: true)
     input("panicKey","enum", title: "Select Panic Key Configured By Your Installer", description: "(A:1&*) or (B:*&#) or (C:3&#)", options: ["A","B","C"], required: true, displayDuringSetup: true)
 }
 
@@ -364,7 +365,7 @@ def parse(String description) {
         def powerStatus = msgSplit[0].trim()
         def chimeStatus = msgSplit[1].trim()
         def alarmStatus = msgSplit[2].trim()
-		def activeZone = msgSplit[3].trim()
+	def activeZone = msgSplit[3].trim()
         def inactiveList = msgSplit[4].trim()
         def keypadMsg = msgSplit[5].trim()
 
