@@ -40,7 +40,7 @@ preferences {
 
 
 metadata {
-	definition (name: "AD2SmartThings v4.4.1", version: "4.4.1",author: "Stan Dotson and Michael Ritchie") 
+	definition (name: "AD2SmartThings v4.4.2", version: "4.4.2",author: "Stan Dotson and Michael Ritchie") 
     	{
 
 	capability "Switch"  // <on> will arm alarm in "stay" mode; same as armStay
@@ -455,7 +455,7 @@ def unlock() {
 def armAway() {
     //0:msgType, 1:msgSecurityCode, 2:msgCmd
     def securityCodeVal = (securityCode) ? securityCode : ""
-    zigbee.smartShield(text: "[CODE]|"+ securityCodeVal + "|2").format()   
+    zigbee.smartShield(text: "CODE|"+ securityCodeVal + "|2").format()   
 }
 
 def disarm() {
