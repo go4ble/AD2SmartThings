@@ -18,9 +18,11 @@ After installing this project, control of your alarm panel becomes intuitive and
 
 
 ***Release Note:***
+
 *-*This release allows for independent zone processing and reduces the logging from the Aruidno in SmartThings recent history log. Also included is a SmartApp that will automatically create virtual contact and motion sensors which allows you to subscribe to these from other SmartApps. This release also standardizes the hardware assembly of the AD2SmartThings device, which addresses the top two support issues. In addition, we provide more detailed instructions on how to power your project using the alarm console.   The release includes new version 4 code bases for both the Arduino sketch, the device handler and a new README with updated project instructions.
 
 Note: This release is not backwards compatable with the Version 3.X or earlier.  Be sure to install both the sketch and new device handler to upgrade.   The libraries from SmartThings and the ArduinoMega library which can be found on github are not compatable with v4 and later sketches. You must use the ST_Anything SmartThings library. A big thanks to Daniel Ogorchock and his son, Daniel Ogorchock, for creating a superior version of the SmartThings library with many enhancements and  full support for the Arduino Mega. 
+
 
 ## High Level Project Steps
 
@@ -139,6 +141,7 @@ http://arduino.cc/en/main/software
 
 Once the software is installed, the first thing to do is obtain the required libraries.  
 
+
 * A copy of the SmartThings library contained in this repository/release.  This is the ST_Anything version of the SmartThings library.  The libraries from SmartThings and the SmartThingsMega libraries do not work.
 * SoftwareSerial library was default library provided with Arduino IDE
  
@@ -214,6 +217,7 @@ To install the device type code:
 11.  Go to your mobile device and the Arduino tile should now display as a Home Alarm tile.  Hint: on the iPhone, sometimes you have to kill the SmartThings app two times before a new device type update will display on the SmartThings iPhone app.
 
 
+
 To install the SmartApp code: 
  1.  Go to graph.api.smartthings.com   
  2.  Select My Device Types tab
@@ -229,29 +233,6 @@ To install the SmartApp code:
  13. Save and Publish (for me) the device type.  You have to Publish!
  14. Go to your mobile device and to the SmartThings Market in the bottom right corner of the app.  Select the SmartApps tab and scroll to the bottom of the list.  Select My Apps and choose Alarm handler and configure it based on your alarm zone settings (do this last after you get the system fully connected and running)
  
-## Connect Your Project To Your Alarm Panel
-
-### Wiring The AD2Pi to your Honeywell or Ademco alarm panel
-
-There is excellent documentation on the Alarm Decoder web site, including an instructional video.  Look for instructions on how to wire the AD2USB which are the same instructions for the AD2Pi used in this project.  Here is the URL:
-
-http://www.alarmdecoder.com/wiki/index.php/Panel_Configuration
-
-Make the following connections from both the AD2Pi and Arduino to the Alarm Panel
-
-| Jumper   | Arduino Pin     | Alarm Panel Terminal                  |
-|:--------:|:---------------:|:-------------------------------------:|
-| Ground   |  GND            | Black Console Ground Return (-)       |
-| Power    |  VIN            | Red Console PWR (+)                   |
-
-
-| Jumper   | AD2Pi Pin       | Alarm Panel Terminal                  |
-|:--------:|:---------------:|:-------------------------------------:|
-| Ground   |  GND Black      | Black Console Ground Return (-)       |
-| Power    |  12V Red        | Red Console PWR (+)                   |
-| Data Out |  DO yellow      | Yellow Data Out To Console            |
-| Data In  |  DI green       | Green Data In From                    |
-
 
 Here is a close up of the terminals that connect AD2Pi to the alarm console
 
