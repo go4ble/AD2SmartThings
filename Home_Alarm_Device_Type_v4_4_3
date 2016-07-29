@@ -41,7 +41,7 @@ preferences {
 
 
 metadata {
-	definition (name: "AD2SmartThings v4.4.2", version: "4.4.2",author: "Stan Dotson and Michael Ritchie") 
+	definition (name: "AD2SmartThings v4.4.3", version: "4.4.3",author: "Stan Dotson and Michael Ritchie") 
     	{
 
 	capability "Switch"  // <on> will arm alarm in "stay" mode; same as armStay
