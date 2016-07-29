@@ -125,9 +125,14 @@ tiles {
 		state "default", label:'${currentValue}'
 	}
  
- 
- // tiles to report activity in a given zone.  Feel free to customize by changing the label in label: 'custom name' 
- 
+/******************************************************************************************************************************************
+ BEGINNING OF PERSONALIZED CODE SECTION
+ The following tiles to report activity in a given zone.  
+ Feel free to customize, for example by changing the code from label: 'Zone #" to label: 'custom name' 
+ We dont expect to have to change this section in future upgrades, so...
+ To make upgrades easier, just copy and replace the customized zone section below into any updated versions
+ ******************************************************************************************************************************************/
+   
    	standardTile("zone1", "device.zone1", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
     	{
 		state "inactive", label: 'Zone 1', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
@@ -158,7 +163,7 @@ tiles {
 		state "inactive", label: 'Zone 6', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
 		state "active", label: 'Zone 6', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
 	}                      
-    standardTile("zone7", "device.zone7", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
+    	standardTile("zone7", "device.zone7", width: 1, height:1, inactiveLabel: false, canChangeIcon: true, canChangeBackground: true) 
     	{
 		state "inactive", label: 'Zone 7', icon: "st.security.alarm.clear", backgroundColor: "#ffffff"
 		state "active", label: 'Zone 7', icon: "st.security.alarm.alarm", backgroundColor: "#53a7c0"
@@ -344,6 +349,11 @@ tiles {
 	main(["main"])
 	details(["main", "disarm","chime","stay", "away", "panic", "msg", "zone1","zone2", "zone3","zone4","zone5","zone6", "zone10","zone11","zone12","zone13","zone14","zone15","zone16","zone17","zone18","zone19","zone20","zone21","zone22","zone23","zone24","zone25","zone26","zone27","zone28","zone29","zone30","zone31","zone32","zone33","zone34","zone35","zone36","zone37","zone38","zone39", "configAD2Pi"])
 }
+
+/******************************************************************************************************************************************
+END OF PERSONALIZED CODE SECTION
+******************************************************************************************************************************************/
+ 
 
 // Parse incoming device messages to generate events
 def parse(String description) {
