@@ -1,5 +1,5 @@
 /** 
- * AD2SmartThings v4_4_4
+ * AD2SmartThings v4_4_5
  * Couple your Ademco/Honeywell Alarm to your SmartThings Graph using an AD2PI, an Arduino and a ThingShield
  * The Arduino passes all your alarm messages to your SmartThings Graph where they can be processed by the Device Type
  * Use the Device Type to control your alarm or use SmartApps to integrate with other events in your home graph
@@ -50,15 +50,6 @@
 /* You have the option to set your security code in the Device Handler or here in the sketch.  Your security code
  * must be set.  The code in the Device Handler takes priority if set.                                               */
 String securityCode = "";
-
-/* Each time a command is sent from SmartThings to the alarm panel, the AD2Pi confirms the command was sent to the
- * panel with '!Sending.done'. These messages can be useful during the initial installation to confirm whether the
- * AD2Pi is properly connected to the alarm panel. There may be up to five periods between 'Sending' and 'done'.
- * If there are five the keypress has timed out and you should confirm your wiring. After initial install these
- * messages aren't necessary and can overload SmartThings with too many consecutive alerts preventing important
- * updates from being processed.  Set the below parameter to true during initial install if you are having trouble.
- * If not leave it false.                                                                                            */
-boolean debugAD2Pi = false;
 
 /* Debugging has been included in this Arduino sketch as well as the SmartThings device handler.  To debug the Arduino sketch, set the 
  * isDebugEnabled variable to true, upload the code, and launch the Serial Monitor.  When debugging the Arduino it is also useful to set
@@ -158,6 +149,9 @@ void processAD2() {
     return;
   } 
 
+
+  
+  
   //Build and forward a message to the device handler in SmartThings. Only send information that represents an new status
   String sendData; // alarm panel combined status
   String sendMessage; //alarm panel stats + keypad message
@@ -167,16 +161,25 @@ void processAD2() {
     String sendMessage = ("|||||" + str.substring(8,18));
     smartthing.send(sendMessage);
     delay (3000);
-    previousSendData = "";  //trip process to send subsequent message to smartthings
-    previousAlarmStatus = "";
+    previousStr = "";  //trip algorithm to send subsequent message to smartthings
     return;
   } 
-  if (str.indexOf("!Sending") >= 0 && debugAD2Pi) {
-    String sendMessage = (str);
-    smartthing.send(sendMessage);
-    return;
-  } 
+  
+ /* Each time a command is sent from SmartThings to the alarm panel, the AD2Pi confirms the command was sent to the
+ * panel with '!Sending..done'. These messages can be useful during the initial installation to confirm whether the
+ * AD2Pi is properly connected to the alarm panel. There may be up to five periods between 'Sending' and 'done'.
+ * If there are four or more periods, then the keypress has likely timed out and you should confirm the wiring between
+ * AD2Pi and the Alarm Consule.  */
 
+  if (str.indexOf("....") >= 0) {
+    String sendMessage = ("|||||Communication Trouble");
+    smartthing.send(sendMessage);
+    previousStr = "";  //trip algorithm to send subsequent message to smartthings
+    return;
+  }
+  
+
+  
   /* By default the alarm panel doesn't display individual faults but they can be displayed by hitting the * key.  If the panel is disarmed via SmartThings, the * key
    * is automatically included during disarm.  But if the panel is disarmed via keypad, the panel may prompt for the * key.  The code below will look for the prompt
    * and hit the * key. The messages do vary from panel to panel because the message is set by the installer.  If for some reason this isn't working for you, validate
