@@ -1,5 +1,5 @@
 /** 
- * AD2SmartThings v4_4_5
+ * AD2SmartThings v4_4_6
  * Couple your Ademco/Honeywell Alarm to your SmartThings Graph using an AD2PI, an Arduino and a ThingShield
  * The Arduino passes all your alarm messages to your SmartThings Graph where they can be processed by the Device Type
  * Use the Device Type to control your alarm or use SmartApps to integrate with other events in your home graph
@@ -55,7 +55,7 @@ String securityCode = "";
  * isDebugEnabled variable to true, upload the code, and launch the Serial Monitor.  When debugging the Arduino it is also useful to set
  * the isDebugEnabled variable to true in the SmartThings device handler to confirm messages sent from the Arduino to SmartThings.
  * You can view debug messages in SmartThings in Live Logging.                                                       */
-boolean isDebugEnabled = false;
+boolean isDebugEnabled = true;
 
 /************************************************* End User Settings *************************************************/
 
@@ -133,7 +133,7 @@ void processAD2() {
   serialLog (str);
   //handle AD2Pi messages
 
- //first, check to see if  message is disarmed system status repeating over and over
+ //first, check to see if new message is the same as previous, in which case do nothing
   if (str.equals(previousStr))  {   
     // do nothing to avoid excessive logging to SmartThings hub and quickly return to loop
     return;
@@ -178,8 +178,12 @@ void processAD2() {
     return;
   }
   
-
+  if (str.startsWith("!Sending")) {
+    return;
+  } 
   
+
+
   /* By default the alarm panel doesn't display individual faults but they can be displayed by hitting the * key.  If the panel is disarmed via SmartThings, the * key
    * is automatically included during disarm.  But if the panel is disarmed via keypad, the panel may prompt for the * key.  The code below will look for the prompt
    * and hit the * key. The messages do vary from panel to panel because the message is set by the installer.  If for some reason this isn't working for you, validate
@@ -375,8 +379,10 @@ void processAD2() {
 
   sendData = sendMessage;
   sendMessage = sendMessage + keypadMsg;
-  Serial.println(sendMessage);
-  Serial.println(sendData);
+  if (isDebugEnabled) {
+    Serial.print ("Message: ");
+    Serial.println(sendMessage);
+  }
  
   // Messages longer than 63 characters sometimes do not send to SmartThings.  Check length and truncate message if longer than 63 characters.
   if (sendMessage.length() > 63) {
@@ -424,7 +430,7 @@ void messageCallout(String message) {
 		
         /* The following code will perform a soft refresh of the device handler status.  This can be activated by pressing the disarm
          * button while the alarm is already disarmed. */
-         serialLog("msgCmd: " + msgCmd + "previousAlarmStatus: " + previousAlarmStatus);
+         serialLog("msgCmd: " + msgCmd + "   previousAlarmStatus: " + previousAlarmStatus);
         if (msgCmd.startsWith("1") && previousAlarmStatus == "disarmed") {
           previousPowerStatus = "";
           previousChimeStatus = "";
@@ -496,7 +502,7 @@ String getActiveList(int startNum, int endNum) {
 void printArray(int *a, int n) {
   for (int i = 0; i < n; i++) {
     if (i == 0) {
-      Serial.print("Count:");
+      Serial.print("Active Zone Count and Zone Status:");
     } else {
       Serial.print(String(i) + ":");
     }
