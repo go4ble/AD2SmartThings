@@ -26,14 +26,16 @@ After installing this project, control of your alarm panel becomes intuitive and
 
 ***v4 Release Note:***
 
-*-*This v4 release is jam packed with:
+### This v4 release is jam packed with updates:
 * A smart app that allows you to integrate your alarm system sensors as virtual sensors in SmartThings. You can direct off the shelf SmartApps to monitor your alarm panel sensors and automate SmartThings actions.  Really cool.
 * We have enabled the ability for independent zone processing when the alarm is in the disarmed status.  Previously, zones that triggered would accumulate as "active" until the last zone cleared.  Now each zone operates independently.  
 * In response to clear community feedback, we have greatly reduced the logging to the SmartThings 'Recently' page.  Now the logs provide a concise history of the physical changes to the alarm panel.  
-* This release also standardizes the hardware assembly of the AD2SmartThings device, which addresses the top two support issues. 
+* In response to another community request, there is now the ability to software select Arm Stay or Arm Instant using a toggle in the Device Handler Preferences.  
+* This release  standardizes the hardware assembly of the AD2SmartThings device, which addresses the top two support issues. 
 * In addition, we provide more detailed instructions on how to power your project using the alarm console.   This has the advantage of running your project off of the alarm panel's battery backup when the power goes down.  And of course you already have your SmartThings hub and router on battery backup!  Thanks to community member @Francois_Deliege  for this suggestion.
 * The release includes new version 4.X.X code bases for both the Arduino sketch and the device handler
 * An updated README includes lots of feedback from communitity member experiences that make it easier for you to complete this project.
+
 
 Note: This release is not backwards compatable with the Version 3.X or earlier.  Be sure to install both the sketch and new device handler to upgrade.   The libraries from SmartThings and the ArduinoMega library which can be found on github are not compatable with v4 and later sketches. You must use the ST_Anything SmartThings library. A big thanks to Daniel Ogorchock and his son, Daniel Ogorchock, for creating a superior version of the SmartThings library with many enhancements and  full support for the Arduino Mega. 
 
