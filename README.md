@@ -5,21 +5,35 @@
 ### Integrate your Honeywell or Ademco alarm panel into your SmartThings physical graph
 ADT / Honeywell / Ademco / Vista / Alarm / SmartThings / Alarm Panel / Home Alarm
 
-Do want to integrate your home alarm panel with SmartThings?  Do you hate the hassle arming your panle and having to rush to disarm?  Do you want to install another keypad and don't want to deal with your alarm company?  Do you have an alarm panel and never use it?
+A project by Stan Dotson and Michael Ritchie
 
-This is a relatively simple integration project that effectively integrates your Honeywell or Ademco alarm panel with SmartThings.  These panels are typically installed by ADT or other alarm companies.  You can choose to continue or not with your ADT  monitoring service.  This project works either way.  
+Wish you could use your existing home alarm sensors with SmartThings?  Do you hate the hassle arming your panel and having to rush to disarm?  Wish you could control your alarm panel on our smartphone but dont want to pay the higher monthly service bill?  Do you want to install another keypad and don't want to deal with your alarm company?  Do you have an alarm panel and never use it?
 
-After installing this project, control of your alarm panel becomes intuitive and automagic!
-* Automatically arm your panel after everyone has left the house, and have it disarm when you arrive.
+This is a relatively simple project that effectively integrates your Honeywell or Ademco alarm panel with SmartThings.  These panels are typically installed by ADT or other alarm companies.  Its your choice whether you still want to continue or cancel your ADT monitoring service.  This project works either way.  
+
+After installing this project, control of your alarm panel becomes intuitive and automagic! 
+* Automagically arm your panel after everyone has left the house, and have it disarm when someone arrives.
 * Use automation to turn on your alarm when you go to bed and turn off when you wake up 
-* Control your alarm panel via your smartphone or a MiniMote or activate from other sensors or devices
-* Use your smartphone or Minimote to send a panic alarm when there is danger.
+* Control your alarm panel via your smartphone, Alexa or a MiniMote or activate from other sensors or devices.  
+* Use your smartphone, Alexa or Minimote to send a panic alarm when there is danger.
+* Integrate all your existing home alarm sensors as virtual sensors in SmartThings.  You can then link them to other automations
+* Turns your entire alarm panel into a virtual sensor that can be monitored by SmartThings Home Monitor.  This provides an alternative to use Scout as you home monitoring solution instead of your existing service.
+* Immediately get alerts if alarm is triggered via notifications and text messages.  Even see them on your Apple watch!
+* There are many more integration ideas posted on our project forum.  
+* This project is supported by a community that has been active for over 2 years
 
 
 
-***Release Note:***
+***v4 Release Note:***
 
-*-*This release allows for independent zone processing and reduces the logging from the Aruidno in SmartThings recent history log. Also included is a SmartApp that will automatically create virtual contact and motion sensors which allows you to subscribe to these from other SmartApps. This release also standardizes the hardware assembly of the AD2SmartThings device, which addresses the top two support issues. In addition, we provide more detailed instructions on how to power your project using the alarm console.   The release includes new version 4 code bases for both the Arduino sketch, the device handler and a new README with updated project instructions.
+*-*This v4 release is jam packed with:
+* A smart app that allows you to integrate your alarm system sensors as virtual sensors in SmartThings. You can direct off the shelf SmartApps to monitor your alarm panel sensors and automate SmartThings actions.  Really cool.
+* We have enabled the ability for independent zone processing when the alarm is in the disarmed status.  Previously, zones that triggered would accumulate as "active" until the last zone cleared.  Now each zone operates independently.  
+* In response to clear community feedback, we have greatly reduced the logging to the SmartThings 'Recently' page.  Now the logs provide a concise history of the physical changes to the alarm panel.  
+* This release also standardizes the hardware assembly of the AD2SmartThings device, which addresses the top two support issues. 
+* In addition, we provide more detailed instructions on how to power your project using the alarm console.   This has the advantage of running your project off of the alarm panel's battery backup when the power goes down.  And of course you already have your SmartThings hub and router on battery backup!  Thanks to community member @Francois_Deliege  for this suggestion.
+* The release includes new version 4.X.X code bases for both the Arduino sketch and the device handler
+* An updated README includes lots of feedback from communitity member experiences that make it easier for you to complete this project.
 
 Note: This release is not backwards compatable with the Version 3.X or earlier.  Be sure to install both the sketch and new device handler to upgrade.   The libraries from SmartThings and the ArduinoMega library which can be found on github are not compatable with v4 and later sketches. You must use the ST_Anything SmartThings library. A big thanks to Daniel Ogorchock and his son, Daniel Ogorchock, for creating a superior version of the SmartThings library with many enhancements and  full support for the Arduino Mega. 
 
