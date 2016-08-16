@@ -38,10 +38,11 @@ preferences {
     	description: "Code entered here takes priority.", defaultValue: "", required: false, displayDuringSetup: true)
     input("panicKey","enum", title: "Select Panic Key Configured By Your Installer", description: "(A:1&*) or (B:*&#) or (C:3&#)", options: ["A","B","C"], required: true, displayDuringSetup: true)
 }
+	input("armedInstant", "bool", title: "Use Armed Instant When Arming Stay", description: "Slide To Right For Armed Instant", defaultValue: false, required: false)
 
 
 metadata {
-	definition (name: "AD2SmartThings v4.4.4", version: "4.4.4",author: "Stan Dotson and Michael Ritchie") 
+	definition (name: "AD2SmartThings v4.4.5", version: "4.4.5",author: "Stan Dotson and Michael Ritchie") 
     	{
 
 	capability "Switch"  // <on> will arm alarm in "stay" mode; same as armStay
@@ -380,7 +381,7 @@ def parse(String description) {
         def powerStatus = msgSplit[0].trim()
         def chimeStatus = msgSplit[1].trim()
         def alarmStatus = msgSplit[2].trim()
-	def activeZone = msgSplit[3].trim()
+		def activeZone = msgSplit[3].trim()
         def inactiveList = msgSplit[4].trim()
         def keypadMsg = msgSplit[5].trim()
 
@@ -484,7 +485,11 @@ def disarm() {
 def armStay() {
     //0:msgType, 1:msgSecurityCode, 2:msgCmd
     def securityCodeVal = (securityCode) ? securityCode : ""
-    zigbee.smartShield(text: "CODE|" + securityCodeVal + "|3").format()
+    def alarmCode = "|3"
+    if (armedInstant) {
+    	alarmCode = "|7"
+    }
+    zigbee.smartShield(text: "CODE|" + securityCodeVal + alarmCode).format()
 }
 
 def siren() {
