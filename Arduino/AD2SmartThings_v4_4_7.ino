@@ -1,5 +1,5 @@
 /** 
- * AD2SmartThings v4_4_6
+ * AD2SmartThings v4_4_7
  * Couple your Ademco/Honeywell Alarm to your SmartThings Graph using an AD2PI, an Arduino and a ThingShield
  * The Arduino passes all your alarm messages to your SmartThings Graph where they can be processed by the Device Type
  * Use the Device Type to control your alarm or use SmartApps to integrate with other events in your home graph
@@ -55,7 +55,7 @@ String securityCode = "";
  * isDebugEnabled variable to true, upload the code, and launch the Serial Monitor.  When debugging the Arduino it is also useful to set
  * the isDebugEnabled variable to true in the SmartThings device handler to confirm messages sent from the Arduino to SmartThings.
  * You can view debug messages in SmartThings in Live Logging.                                                       */
-boolean isDebugEnabled = true;
+boolean isDebugEnabled = false;
 
 /************************************************* End User Settings *************************************************/
 
@@ -272,7 +272,7 @@ void processAD2() {
   } else if (rawPanelCode.substring(3,4) == "1") {
     alarmStatus = "armedStay";
   }
-  if (keypadMsg.indexOf("Exit Now") >= 0) {  
+  if (keypadMsg.indexOf("Exit Now") >= 0 || keypadMsg.indexOf("exit now") >= 0) {  
     alarmStatus.replace("armed", "arming");
   } 
 
