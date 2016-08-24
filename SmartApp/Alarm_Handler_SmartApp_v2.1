@@ -1,5 +1,5 @@
 /**
- *  Alarm Handler v2
+ *  Alarm Handler v2.1
  *
  *  Copyright 2015 Michael Ritchie
  *
@@ -15,7 +15,7 @@
  */
  
 definition(
-    name: "Alarm Handler v2",
+    name: "Alarm Handler v2.1",
     namespace: "",
     author: "Michael Ritchie",
     description: "Create virtual devices for each alarm zone",
@@ -55,8 +55,11 @@ def zoneSetup() {
 }
 
 def alertSetup() {
-    dynamicPage(name: "alertSetup", title: "Alarm Alert Setup", install:true) {
-        section("Receive alarm alert messages via a push notification and/or an SMS message.  By enabling notifications, you will receive notifications for alarm sounding, panel power status changes (on battery, low battery, on AC), and when you try to arm your alarm and it is not in a ready state."){
+    dynamicPage(name: "alertSetup", title: "Additional Features", install:true) {
+        section("Integrate your alarm panel with SmartThings Smart Home Monitor.  By enabling this feature SHM will be armed and disarmed as your alarm panel arms and disarms."){
+            input "syncSHM", "bool", title: "Sync with SHM?", defaultValue: false
+        }
+		section("Receive alarm alert messages via a push notification and/or an SMS message.  By enabling notifications, you will receive notifications for alarm sounding, panel power status changes (on battery, low battery, on AC), and when you try to arm your alarm and it is not in a ready state."){
             input "sendNotification", "bool", title: "Send notifications?", defaultValue: true
             input "phone", "phone", title: "Phone Number (for SMS, optional)", required: false
             input "pushAndPhone", "enum", title: "Both Push and SMS?", required: false, metadata: [values: ["Yes","No"]]
@@ -91,6 +94,13 @@ def initialize() {
         if (contacts) {
             subscribe(contacts, "contact", notificationHandler)
         }
+    }
+	
+	if (syncSHM) {
+    	subscribe(arduino, "system", shmHandler)
+        
+        // Declare/Clear variables to prevent duplicate updates
+    	state.previousDeviceValue = ""
     }
 
     for (int i = 1 ; i <= howMany; i++) {        
@@ -176,6 +186,31 @@ def notificationHandler(evt) {
 	}
 	if (phone) {
 		sendSms(phone, msg)
+	}
+}
+
+// Handle syncing the device handler with Smart Home Monitor
+def shmHandler(evt) {
+    def deviceName = evt.displayName
+    def deviceValue = evt.value
+	
+	if (deviceValue.indexOf("arming") == -1 && deviceValue != "" && deviceValue != null && state.previousDeviceValue != deviceValue) {
+		def shmValue = ""
+		
+		switch (deviceValue) {
+			case "disarmed":
+				shmValue = "off"
+				break
+			case "armedStay":
+				shmValue = "stay"
+				break
+			case "armedAway":
+				shmValue = "away"
+				break
+		}
+        state.previousDeviceValue = deviceValue
+		sendLocationEvent(name: "alarmSystemStatus", value: shmValue)
+        //log.debug "shmValue: ${shmValue}, previousDeviceValue: ${state.previousDeviceValue}"
 	}
 }
 
