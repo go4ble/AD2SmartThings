@@ -37,19 +37,17 @@ preferences {
     input("securityCode", "text", title: "Option: Enter your 4 digit homeowner security code here or in the Arduino sketch",
     	description: "Code entered here takes priority.", defaultValue: "", required: false, displayDuringSetup: true)
     input("panicKey","enum", title: "Select Panic Key Configured By Your Installer", description: "(A:1&*) or (B:*&#) or (C:3&#)", options: ["A","B","C"], required: true, displayDuringSetup: true)
+    input("armedInstant", "bool", title: "Use Armed Instant When Arming Stay", description: "Slide To Right For Armed Instant", defaultValue: false, required: false)
 }
-	input("armedInstant", "bool", title: "Use Armed Instant When Arming Stay", description: "Slide To Right For Armed Instant", defaultValue: false, required: false)
-
 
 metadata {
-	definition (name: "AD2SmartThings v4.4.5", version: "4.4.5",author: "Stan Dotson and Michael Ritchie") 
-    	{
+	definition (name: "AD2SmartThings v4.4.6", version: "4.4.6",author: "Stan Dotson and Michael Ritchie") {
 
-	capability "Switch"  // <on> will arm alarm in "stay" mode; same as armStay
+        capability "Switch"  // <on> will arm alarm in "stay" mode; same as armStay
         capability "Lock"  // <lock> will arm alarm in "away" mode; same as armAway
-	capability "Alarm" // enables <both> or <siren> to  immediately alarm the system
-	capability "Motion Sensor" //allows your alarm panel to mimic a motion sensor. The motion sensor will be active when system alarms
-        
+        capability "Alarm" // enables <both> or <siren> to  immediately alarm the system
+        capability "Motion Sensor" //allows your alarm panel to mimic a motion sensor. The motion sensor will be active when system alarms
+
         command "disarm"
         command "armStay"
         command "armAway"
@@ -58,11 +56,10 @@ metadata {
         command "siren"
         command "pressPanicOnce"
         command "pressPanicTwice"
-        
+
         attribute "system", "string"
         attribute "msg", "string"
         attribute "alertMsg", "string"
-
 	}
 }
 
@@ -363,7 +360,7 @@ END OF PERSONALIZED CODE SECTION
 
 // Parse incoming device messages to generate events
 def parse(String description) {
-    def isDebugEnabled = true
+    def isDebugEnabled = false
   	
   	def result = []
     def rawMsg = zigbee.parse(description)?.text
