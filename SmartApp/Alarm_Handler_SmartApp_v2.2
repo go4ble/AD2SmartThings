@@ -1,5 +1,5 @@
 /**
- *  Alarm Handler
+ *  Alarm Handler v2.2
  *
  *  Copyright 2015 Michael Ritchie
  *
@@ -15,10 +15,10 @@
  */
  
 definition(
-    name: "Alarm Handler",
-    namespace: "mlritchie",
+    name: "Alarm Handler v2.2",
+    namespace: "",
     author: "Michael Ritchie",
-    description: "Create virtual devices for each alarm zone",
+    description: "Create virtual devices for each alarm zone, Sends alerts from the alarm panel, synchronizes alarm panel with Smart Home Monitor",
     category: "Convenience",
     iconUrl: "http://cdn.device-icons.smartthings.com/Home/home3-icn.png",
     iconX2Url: "http://cdn.device-icons.smartthings.com/Home/home3-icn@2x.png",
@@ -55,11 +55,18 @@ def zoneSetup() {
 }
 
 def alertSetup() {
-    dynamicPage(name: "alertSetup", title: "Alarm Alert Setup", install:true) {
-        section("Alarm Alert Messages via a push notification and/or an SMS message"){
+    dynamicPage(name: "alertSetup", title: "Additional Features", install:true) {
+        section("Integrate your alarm panel with SmartThings Smart Home Monitor.  By enabling this feature SHM will be in sync with your alarm panel.  You can arm and disarm your panel via SHM, in the Alarm Device Handler, or directly on your alarm system keypad with everything in sync."){
+            input "syncSHM", "bool", title: "Sync with SHM?", defaultValue: false
+        }
+		section("Receive alarm alert messages via a push notification and/or an SMS message.  By enabling notifications, you will receive notifications for alarm sounding, panel power status changes (on battery, low battery, on AC), and when you try to arm your alarm and it is not in a ready state."){
             input "sendNotification", "bool", title: "Send notifications?", defaultValue: true
             input "phone", "phone", title: "Phone Number (for SMS, optional)", required: false
             input "pushAndPhone", "enum", title: "Both Push and SMS?", required: false, metadata: [values: ["Yes","No"]]
+        }
+        section("Additional notifications when the state changes on a contact or motion sensor.  This can include virtual devices created by this SmartApp."){
+            input "contacts", "capability.contactSensor", title: "Contact Sensors", required: false, multiple: true
+            input "motions", "capability.motionSensor", title: "Motion Sensors", required: false, multiple: true
         }
     }    
 }
@@ -78,12 +85,27 @@ def uninstalled() {
 }
 
 def initialize() {
-    // Subscribe to the Arduino for Alert Messages
+    // Subscribe to the Arduino and other contacts and motions for notifications
     if (sendNotification) {
     	subscribe(arduino, "alertMsg", alarmMsgHandler)
+        if (motions) {
+            subscribe(motions, "motion.active", notificationHandler)
+        }
+        if (contacts) {
+            subscribe(contacts, "contact", notificationHandler)
+        }
     }
-    
-	for (int i = 1 ; i <= howMany; i++) {        
+	
+	if (syncSHM) {
+    	subscribe(arduino, "system", alarmHandler)
+        subscribe(location, "alarmSystemStatus", shmHandler)
+        
+        // Declare/Clear variables to prevent duplicate updates
+    	state.previousAlarmValue = arduino.currentValue("system")
+        state.previousSHMValue = location.currentState("alarmSystemStatus")?.value
+    }
+
+    for (int i = 1 ; i <= howMany; i++) {        
         def zoneNumber = "zone" + settings["zone$i"].toString()
         def zoneName = settings["name$i"]
         if (namePrefix) {
@@ -91,7 +113,7 @@ def initialize() {
         }
         def zoneType = settings["typezone$i"]
         def deviceID = "Alarm_" + zoneNumber
-        log.debug "checking device: zoneNumber: ${zoneNumber}, name: ${zoneName}, type: ${zoneType}, deviceID: ${deviceID}"
+        //log.debug "checking device: zoneNumber: ${zoneNumber}, name: ${zoneName}, type: ${zoneType}, deviceID: ${deviceID}"
     	
         def myDevice = getChildDevice(deviceID)
         if (!myDevice) {
@@ -141,6 +163,7 @@ def contactHandler(evt) {
     }
 }
 
+//Handle alertMsg's from the AD2SmartThings device handler.  Message is set in the DH and this function just sends it.
 def alarmMsgHandler(evt) {
     def msg = evt.value
 
@@ -151,6 +174,89 @@ def alarmMsgHandler(evt) {
 	if (phone) {
 		//log.debug "sending SMS, phone: ${phone}, msg: ${msg}"
 		sendSms(phone, msg)
+	}
+}
+
+// Handle notifications for contacts and motions subscribed via the SmartApp preferences
+def notificationHandler(evt) {
+    def deviceName = evt.displayName
+    def deviceValue = evt.value
+    def msg = deviceName + " is " + deviceValue
+
+	if (!phone || pushAndPhone != "No") {
+		sendPush(msg)
+	}
+	if (phone) {
+		sendSms(phone, msg)
+	}
+}
+
+// Handle syncing the alarm panel with Smart Home Monitor
+def alarmHandler(evt) {
+    def deviceName = evt.displayName
+    def deviceValue = evt.value
+    
+	if (deviceValue != "" && deviceValue != null && state.previousAlarmValue != deviceValue) {
+        def translatedState = translateState(deviceValue)
+        def shmState = location.currentState("alarmSystemStatus")?.value
+        //log.debug "alarmHandler - deviceValue: ${deviceValue}, previousAlarmValue: ${state.previousAlarmValue}, translatedState: ${translatedState}, shmState: ${shmState}"
+
+        if (translatedState != shmState) {
+            // Set previous state variables to the new values to prevent loop.  When the sendLocationEvent fires this app will launch again.
+            state.previousAlarmValue = deviceValue
+            state.previousSHMValue = translatedState
+            sendLocationEvent(name: "alarmSystemStatus", value: translatedState)
+        }
+	}
+}
+
+// Handle syncing Smart Home Monitor with the alarm panel
+def shmHandler(evt) {
+    def deviceName = evt.displayName
+    def deviceValue = evt.value
+
+	if (deviceValue != "" && deviceValue != null && state.previousSHMValue != deviceValue) {
+		def translatedState = translateState(deviceValue)
+        def alarmState = arduino.currentState("system").value.toLowerCase()
+        //log.debug "shmHandler - deviceValue: ${deviceValue}, previousSHMValue: ${state.previousSHMValue}, translatedState: ${translatedState}, alarmState: ${alarmState}"
+        
+        if (translatedState != alarmState) {
+            // Set previous state variables to the new values to prevent loop.  When the Arduino command fires this app will launch again.			
+            state.previousSHMValue = deviceValue
+            state.previousAlarmValue = translatedState
+            switch (deviceValue) {
+                case "off":
+                    arduino.disarm()
+                    break
+                case "stay":
+                    arduino.armStay()
+                    break
+                case "away":
+                    arduino.armAway()
+                    break
+            }
+		}
+	}
+}
+
+private translateState(currentState) {
+	switch (currentState) {
+		case "disarmed":
+			return "off"
+		case "armingStay":
+			return "stay"
+        case "armedStay":
+			return "stay"
+		case "armingAway":
+			return "away"
+        case "armedAway":
+			return "away"
+        case "off":
+			return "disarmed"
+		case "stay":
+			return "armedStay"
+		case "away":
+			return "armedAway"
 	}
 }
 
